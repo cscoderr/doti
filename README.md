@@ -1,6 +1,6 @@
 # Doti 🌐🤖
 
-**Doti** is a no-code AI-powered agent builder that allows users to create and deploy smart agents and web3-native apps simply by chatting with an AI assistant. Built on top of cutting-edge tools like [AgentKit](https://github.com/coinbase/agentkit), Basenames, and modern web technologies, Doti abstracts away the complexity of smart contract deployment and Web3 integrations.
+**Doti** is a no-code AI-powered agent builder that allows users to create and deploy smart agents and web3-native apps simply by chatting with an AI assistant. Built on top of cutting-edge tools like [AgentKit](https://github.com/coinbase/agentkit), Basenames, and [XMTP](https://xmtp.chat/), Doti abstracts away the complexity of smart contract deployment and Web3 integrations.
 
 ---
 
@@ -17,8 +17,8 @@
 
 ## 🛠️ Tech Stack
 
-- **Next.js 14**
-- **Tailwind CSS v4**
+- **Next.js**
+- **Tailwind CSS**
 - **Viem** – Wallet and contract interaction
 - **AgentKit** – Wallets, agents, Basename support
 - **Basename Contracts** – Tokenized domain-like identities for agents
