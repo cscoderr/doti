@@ -9,19 +9,40 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@coinbase/agentkit": "^0.8.0",
+    "@coinbase/agentkit-langchain": "^0.3.0",
+    "@coinbase/cdp-sdk": "^1.13.0",
+    "@coinbase/onchainkit": "^0.38.13",
+    "@headlessui/react": "^2.2.4",
+    "@prisma/client": "^6.9.0",
+    "@prisma/extension-accelerate": "^2.0.1",
+    "@rainbow-me/rainbowkit": "^2.2.6",
+    "@tanstack/react-query": "^5.80.6",
+    "@xmtp/browser-sdk": "^2.1.1",
+    "ai": "^4.3.16",
+    "axios": "^1.9.0",
+    "blockies-ts": "^1.0.0",
+    "ethers": "^6.14.3",
+    "lucide-react": "^0.513.0",
+    "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.3.3"
+    "viem": "^2.31.0",
+    "wagmi": "^2.15.6",
+    "zod": "^3.25.56",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
-    "@eslint/eslintrc": "^3"
+    "prisma": "^6.9.0",
+    "tailwindcss": "^4",
+    "tsx": "^4.19.4",
+    "typescript": "^5"
   }
 }
