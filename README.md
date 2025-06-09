@@ -31,5 +31,18 @@
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/yourusername/doti.git
+git clone https://github.com/cscoderr/doti.git
 cd doti
+```
+
+### 2. Install dependencies
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Run in development
+```bash
+npm run dev
+```
