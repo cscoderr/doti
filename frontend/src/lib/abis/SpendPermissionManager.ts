@@ -1,3 +1,8 @@
+import { Address } from "viem";
+
+export const spendPermissionManagerAddress =
+  "0xf85210B21cC50302F477BA56686d2019dC9b67Ad" as Address;
+
 export const spendPermissionManagerAbi = [
   {
     type: "constructor",
@@ -888,4 +893,4 @@ export const spendPermissionManagerAbi = [
   { type: "error", name: "ZeroSpender", inputs: [] },
   { type: "error", name: "ZeroToken", inputs: [] },
   { type: "error", name: "ZeroValue", inputs: [] },
-] as const;
+];

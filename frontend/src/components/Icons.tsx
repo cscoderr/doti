@@ -36,7 +36,7 @@ export function MetaMask() {
       y="0"
       version="1.1"
       viewBox="0 0 28 28"
-      xml:space="preserve"
+      xmlSpace="preserve"
     >
       <path
         fill="#e2761b"

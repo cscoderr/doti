@@ -1,5 +1,4 @@
 import { DotiAgent } from "@/types";
-import { Download, CheckCircle2 } from "lucide-react";
 import BlockiesIcon from "./BlockiesIcon";
 import Image from "next/image";
 
@@ -9,7 +8,7 @@ interface AgentCardProps {
   onClick?: () => void;
 }
 
-const AgentCard = ({ agent, onDownload, onClick }: AgentCardProps) => {
+const AgentCard = ({ agent, onClick }: AgentCardProps) => {
   return (
     <div
       className="bg-background border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 md:p-6 hover:border-primary transition-all duration-200 cursor-pointer group"
@@ -23,31 +22,7 @@ const AgentCard = ({ agent, onDownload, onClick }: AgentCardProps) => {
             <h3 className="font-semibold text-base md:text-lg group-hover:text-primary transition-colors">
               {agent.name}
             </h3>
-            {/* <span className="text-xs md:text-sm text-textDark/60 dark:text-textLight/60">
-              {type}
-            </span> */}
           </div>
-        </div>
-        <div>
-          {onDownload && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDownload(agent.id);
-              }}
-              className={`p-2 rounded-full transition-colors ${
-                agent.isDownloaded
-                  ? "text-accent hover:bg-accent/10"
-                  : "text-primary hover:bg-primary/10"
-              }`}
-            >
-              {agent.isDownloaded ? (
-                <CheckCircle2 size={20} />
-              ) : (
-                <Download size={20} />
-              )}
-            </button>
-          )}
         </div>
       </div>
 

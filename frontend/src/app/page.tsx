@@ -5,13 +5,8 @@ import { Users, MessageSquare, TrendingUp } from "lucide-react";
 import AgentCard from "@/components/AgentCard";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
-import {
-  BasenameTextRecordKeys,
-  getBasename,
-  getBasenameAvatar,
-  getBasenameTextRecord,
-} from "./api/basename/newroute";
 import { DotiAgent } from "@/types";
+import { env } from "@/lib/env";
 
 export default function Home() {
   const [agents, setAgents] = useState<DotiAgent[]>([]);
@@ -30,7 +25,7 @@ export default function Home() {
         basename: username,
         address,
       };
-      const response = await fetch("http://localhost:3000/api/basename", {
+      const response = await fetch("/api/basename", {
         method: "POST",
         body: JSON.stringify(payload),
       });
@@ -42,30 +37,10 @@ export default function Home() {
     }
   }, [username, address]);
 
-  const handleFetchBasename = async () => {
-    const basename = await getBasename(
-      "0x5Dba4C1Db55c64bBB0260B9F48fE7009A07AaD71" as `0x${string}`
-    );
-    if (basename === undefined)
-      throw Error("failed to resolve address to name");
-
-    const avatar = await getBasenameAvatar(basename);
-    const description = await getBasenameTextRecord(
-      basename,
-      BasenameTextRecordKeys.Description
-    );
-
-    return {
-      basename,
-      avatar,
-      description,
-    };
-  };
-
   const getAgents = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5001/api/agent", {
+      const response = await fetch(`${env.backendUrl}/api/agent`, {
         method: "GET",
         headers: {
           "content-type": "application/json",

@@ -1,10 +1,19 @@
 import React, { useCallback, useMemo } from "react";
-import { Home, Users, LogOut, Search, MessageCircle, Copy } from "lucide-react";
+import {
+  Home,
+  Users,
+  LogOut,
+  MessageCircle,
+  Copy,
+  AtomIcon,
+  User,
+} from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAccount, useDisconnect } from "wagmi";
 import UserIcon from "./UserIcon";
 import { useXMTP } from "@/context/XmtpProvider";
+import { env } from "@/lib/env";
 
 const navItems = [
   {
@@ -13,14 +22,19 @@ const navItems = [
     href: "/",
   },
   {
-    label: "Chat",
+    label: "Doti",
     icon: <MessageCircle size={20} />,
     href: "/chat",
   },
   {
     label: "Marketplace",
-    icon: <Search size={20} />,
+    icon: <AtomIcon size={20} />,
     href: "/marketplace",
+  },
+  {
+    label: "My Agents",
+    icon: <User size={20} />,
+    href: "/my-agents",
   },
   {
     label: "Groups",
@@ -91,7 +105,7 @@ const SideBar = ({ isOpen }: SideBarProps) => {
           </div>
           {isOpen && (
             <span className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              DOTi
+              {env.appName.toUpperCase()}
             </span>
           )}
         </div>
@@ -100,32 +114,58 @@ const SideBar = ({ isOpen }: SideBarProps) => {
         <nav className="flex-1 mt-2">
           <ul className="space-y-1">
             {navItems.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive =
+                pathname === item.href || pathname.startsWith(item.href + "/");
               return (
                 <li key={item.label}>
-                  <Link
-                    href={item.href}
-                    className={`flex items-center gap-3 px-4 py-2 text-textDark dark:text-textLight hover-primary
-                      ${!isOpen ? "justify-center" : ""}
-                      ${isActive ? "bg-primary/10 text-primary" : ""}`}
-                    title={item.label}
-                  >
-                    <span
-                      className={`transition-transform duration-200 group-hover:scale-110 ${
-                        isActive ? "text-primary" : ""
-                      }`}
+                  {item.label === "Groups" ? (
+                    <div
+                      className={`flex items-center gap-3 px-4 py-2 text-textDark/50 dark:text-textLight/50 cursor-not-allowed
+                        ${!isOpen ? "justify-center" : ""}`}
+                      title="Coming Soon"
                     >
-                      {item.icon}
-                    </span>
-                    <span
-                      className={`text-base font-medium transition-all ${
-                        isOpen ? "opacity-100 w-auto" : "opacity-0 w-0"
-                      }`}
-                      style={{ transition: "opacity 0.2s, width 0.2s" }}
+                      <span className="transition-transform duration-200">
+                        {item.icon}
+                      </span>
+                      <span
+                        className={`text-base font-medium transition-all ${
+                          isOpen ? "opacity-100 w-auto" : "opacity-0 w-0"
+                        }`}
+                        style={{ transition: "opacity 0.2s, width 0.2s" }}
+                      >
+                        {item.label}
+                        {isOpen && (
+                          <span className="text-xs ml-2 text-primary">
+                            (Coming Soon)
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-3 px-4 py-2 text-textDark dark:text-textLight hover-primary
+                        ${!isOpen ? "justify-center" : ""}
+                        ${isActive ? "bg-primary/10 text-primary" : ""}`}
+                      title={item.label}
                     >
-                      {item.label}
-                    </span>
-                  </Link>
+                      <span
+                        className={`transition-transform duration-200 group-hover:scale-110 ${
+                          isActive ? "text-primary" : ""
+                        }`}
+                      >
+                        {item.icon}
+                      </span>
+                      <span
+                        className={`text-base font-medium transition-all ${
+                          isOpen ? "opacity-100 w-auto" : "opacity-0 w-0"
+                        }`}
+                        style={{ transition: "opacity 0.2s, width 0.2s" }}
+                      >
+                        {item.label}
+                      </span>
+                    </Link>
+                  )}
                 </li>
               );
             })}
@@ -168,9 +208,6 @@ const SideBar = ({ isOpen }: SideBarProps) => {
                     </span>
                     <Copy size={12} onClick={handleCopyAddress} />
                   </div>
-                  <span className="text-xs text-textDark/60 dark:text-textLight/60">
-                    csccoder.basetest.eth
-                  </span>
                 </div>
               )}
             </div>

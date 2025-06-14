@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import blockies from "blockies-ts";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface Group {
   id: string;
@@ -239,7 +240,7 @@ export default function Groups() {
                     {group.icon ? (
                       <span className="text-2xl">{group.icon}</span>
                     ) : (
-                      <img
+                      <Image
                         src={groupIcon}
                         alt={group.title}
                         className="w-12 h-12 rounded-lg"

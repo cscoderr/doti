@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Sun, Moon, Wallet, SidebarOpen, SidebarClose } from "lucide-react";
+import { Sun, Moon, SidebarOpen, SidebarClose } from "lucide-react";
+import { env } from "@/lib/env";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -8,7 +9,6 @@ interface HeaderProps {
 
 const Header = ({ sidebarOpen, onSidebarToggle }: HeaderProps) => {
   const [darkMode, setDarkMode] = useState(false);
-  const [walletBalance] = useState("0.00");
 
   // Initialize dark mode from localStorage
   useEffect(() => {
@@ -52,29 +52,15 @@ const Header = ({ sidebarOpen, onSidebarToggle }: HeaderProps) => {
 
         {/* Title - Show on mobile */}
         <div className="md:hidden flex items-center">
-          <span className="text-xl font-bold text-primary">DOTI</span>
+          <span className="text-xl font-bold text-primary">
+            {env.appName.toUpperCase()}
+          </span>
         </div>
       </div>
 
       {/* Right Section - Theme Toggle and Wallet Balance */}
       <div className="flex items-center gap-4">
         {/* Wallet Balance */}
-
-        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 text-primary">
-          <label className="inline-flex items-center cursor-pointer">
-            <input type="checkbox" value="" className="sr-only peer" />
-            <div className="relative w-11 h-6 bg-background border border-neutral-200 dark:border-neutral-800 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[50%] after:start-[2px] after:-translate-y-[50%] after:bg-white after:border-neutral-200 dark:after:border-neutral-800 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-primary"></div>
-            <span className="ms-3 text-sm font-medium text-primary">
-              Testnet
-            </span>
-          </label>
-        </div>
-
-        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 text-primary">
-          <Wallet size={18} />
-          <span className="font-medium">{walletBalance} ETH</span>
-        </div>
-
         {/* Dark/Light Mode Toggle */}
         <button
           onClick={toggleDarkMode}
@@ -87,6 +73,23 @@ const Header = ({ sidebarOpen, onSidebarToggle }: HeaderProps) => {
             <Moon size={20} className="text-primary" />
           )}
         </button>
+
+        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 text-primary">
+          <label className="inline-flex items-center cursor-pointer">
+            <input type="checkbox" value="" className="sr-only peer" />
+            <div className="relative w-11 h-6 bg-background border border-neutral-200 dark:border-neutral-800 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[50%] after:start-[2px] after:-translate-y-[50%] after:bg-white after:border-neutral-200 dark:after:border-neutral-800 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-primary"></div>
+            <span className="ms-3 text-sm font-medium text-primary">
+              Testnet
+            </span>
+          </label>
+        </div>
+
+        {/* <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 text-primary">
+          <Wallet size={18} />
+          <span className="font-medium">
+            {walletBalance} {env.defaultToken}
+          </span>
+        </div> */}
       </div>
     </header>
   );

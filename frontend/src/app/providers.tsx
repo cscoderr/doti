@@ -51,7 +51,10 @@ export function Providers({
           apiKey={env.cdpApiKey}
           chain={env.chain}
           config={{
-            paymaster: env.paymasterAndBundlerEndpoint,
+            appearance: {
+              mode: "auto",
+              theme: "base",
+            },
           }}
         >
           <XMTPProvider>{children}</XMTPProvider>

@@ -1,4 +1,10 @@
-const CircularProgressBar = ({ size = 24 }: { size?: number }) => {
+const CircularProgressBar = ({
+  size = 24,
+  color,
+}: {
+  size?: number;
+  color?: string;
+}) => {
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <svg
@@ -7,7 +13,7 @@ const CircularProgressBar = ({ size = 24 }: { size?: number }) => {
         height={size}
         viewBox={`0 0 ${size} ${size}`}
         fill="none"
-        stroke="var(--primary)"
+        stroke={color ?? "var(--primary)"}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"

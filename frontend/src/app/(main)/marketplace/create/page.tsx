@@ -1,59 +1,17 @@
 "use client";
 import { useCallback, useState } from "react";
-import { ArrowLeft, Upload, X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
+import { env } from "@/lib/env";
 
 interface FormData {
   name: string;
   description: string;
   prompt: string;
-  categories: string[];
-  icon: string;
-  customImage: File | null;
-  pricingModel: "weekly" | "monthly" | "yearly" | "per-message";
+  pricingModel: "weekly" | "monthly" | "yearly" | "per-message" | "free";
   price: number | string;
 }
-
-const allCategories = [
-  "Customer Support",
-  "Sales",
-  "Technical Support",
-  "Data Analysis",
-  "Content Creation",
-  "Meetings",
-  "Research",
-  "Education",
-  "Development",
-  "Project Management",
-  "Legal",
-  "HR",
-];
-
-const icons = [
-  "🤖",
-  "💼",
-  "🛠️",
-  "📊",
-  "✍️",
-  "🎥",
-  "🔍",
-  "📚",
-  "💻",
-  "📋",
-  "🎮",
-  "🎨",
-  "🎵",
-  "🎬",
-  "📱",
-  "🌐",
-  "🔧",
-  "📈",
-  "💡",
-  "🎯",
-  "🎪",
-  "🎭",
-];
 
 export default function CreateAgent() {
   const router = useRouter();
@@ -62,14 +20,10 @@ export default function CreateAgent() {
     name: "",
     description: "",
     prompt: "",
-    categories: [],
-    icon: "",
-    customImage: null,
-    pricingModel: "monthly",
+    pricingModel: "free",
     price: 0,
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
-  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -88,12 +42,12 @@ export default function CreateAgent() {
             | "weekly"
             | "monthly"
             | "yearly"
-            | "per-message";
+            | "per-message"
+            | "free";
           break;
         case "name":
         case "description":
         case "prompt":
-        case "icon":
           newData[name] = value;
           break;
       }
@@ -108,40 +62,6 @@ export default function CreateAgent() {
     }
   };
 
-  const handleCategoryToggle = (category: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      categories: prev.categories.includes(category)
-        ? prev.categories.filter((c) => c !== category)
-        : [...prev.categories, category],
-    }));
-  };
-
-  const handleIconSelect = (icon: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      icon,
-      customImage: null,
-    }));
-    setPreviewUrl("");
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        customImage: file,
-        icon: "",
-      }));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const validateForm = useCallback(() => {
     const newErrors: Partial<FormData> = {};
 
@@ -151,11 +71,8 @@ export default function CreateAgent() {
     if (!formData.description.trim()) {
       newErrors.description = "Description is required";
     }
-    if (formData.categories.length === 0) {
-      newErrors.categories = ["At least one category is required"];
-    }
-    if (!formData.icon && !formData.customImage) {
-      newErrors.icon = "Either an icon or custom image is required";
+    if (!formData.prompt.trim()) {
+      newErrors.prompt = "Prompt is required";
     }
     if (Number(formData.price) <= 0) {
       newErrors.price = "Price must be greater than 0";
@@ -168,7 +85,7 @@ export default function CreateAgent() {
   const createAgent = useCallback(async () => {
     try {
       if (!address) return;
-      const response = await fetch("http://localhost:5001/api/agent", {
+      const response = await fetch(`${env.backendUrl}/api/agent`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -278,114 +195,84 @@ export default function CreateAgent() {
           )}
         </div>
 
-        {/* Categories Selection */}
-        <div>
-          <label className="block text-sm font-medium mb-2">Categories</label>
-          <div className="flex flex-wrap gap-2">
-            {allCategories.map((category) => (
-              <button
-                key={category}
-                type="button"
-                onClick={() => handleCategoryToggle(category)}
-                className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                  formData.categories.includes(category)
-                    ? "bg-primary text-textLight"
-                    : "bg-primary/10 text-primary hover:bg-primary/20"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-          {errors.categories && (
-            <p className="mt-1 text-sm text-red-500">{errors.categories[0]}</p>
-          )}
-        </div>
-
-        {/* Icon Selection */}
-        <div>
-          <label className="block text-sm font-medium mb-2">Icon</label>
-          <div className="grid grid-cols-8 gap-2 mb-4">
-            {icons.map((icon) => (
-              <button
-                key={icon}
-                type="button"
-                onClick={() => handleIconSelect(icon)}
-                className={`p-2 rounded-lg text-2xl transition-colors ${
-                  formData.icon === icon
-                    ? "bg-primary text-textLight"
-                    : "bg-primary/10 text-primary hover:bg-primary/20"
-                }`}
-              >
-                {icon}
-              </button>
-            ))}
-          </div>
-
-          {/* Custom Image Upload */}
-          <div className="mt-4">
-            <label className="block text-sm font-medium mb-2">
-              Or Upload Custom Image
-            </label>
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 px-4 py-2 border border-neutral-200 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-primary/10 transition-colors">
-                <Upload size={20} />
-                <span>Choose File</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-              </label>
-              {previewUrl && (
-                <div className="relative">
-                  <img
-                    src={previewUrl}
-                    alt="Preview"
-                    className="w-12 h-12 rounded-lg object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPreviewUrl("");
-                      setFormData((prev) => ({
-                        ...prev,
-                        customImage: null,
-                      }));
-                    }}
-                    className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full"
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-          {errors.icon && (
-            <p className="mt-1 text-sm text-red-500">{errors.icon}</p>
-          )}
-        </div>
-
         {/* Pricing Model */}
         <div>
           <label className="block text-sm font-medium mb-2">
             Pricing Model
           </label>
-          <div className="flex gap-4">
-            <select
-              name="pricingModel"
-              value={formData.pricingModel}
-              onChange={handleInputChange}
-              className="px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+          <div className="flex flex-wrap gap-2 mb-4">
+            <button
+              type="button"
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, pricingModel: "free" }))
+              }
+              className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                formData.pricingModel === "free"
+                  ? "bg-primary text-textLight"
+                  : "bg-primary/10 text-primary hover:bg-primary/20"
+              }`}
             >
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="yearly">Yearly</option>
-              <option value="per-message">Per Message/Action</option>
-            </select>
+              Free
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setFormData((prev) => ({
+                  ...prev,
+                  pricingModel: "per-message",
+                }))
+              }
+              className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                formData.pricingModel === "per-message"
+                  ? "bg-primary text-textLight"
+                  : "bg-primary/10 text-primary hover:bg-primary/20"
+              }`}
+            >
+              Per Message/Action
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, pricingModel: "weekly" }))
+              }
+              className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                formData.pricingModel === "weekly"
+                  ? "bg-primary text-textLight"
+                  : "bg-primary/10 text-primary hover:bg-primary/20"
+              }`}
+            >
+              Weekly
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, pricingModel: "monthly" }))
+              }
+              className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                formData.pricingModel === "monthly"
+                  ? "bg-primary text-textLight"
+                  : "bg-primary/10 text-primary hover:bg-primary/20"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, pricingModel: "yearly" }))
+              }
+              className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                formData.pricingModel === "yearly"
+                  ? "bg-primary text-textLight"
+                  : "bg-primary/10 text-primary hover:bg-primary/20"
+              }`}
+            >
+              Yearly
+            </button>
+          </div>
 
-            <div className="flex-1">
+          {formData.pricingModel !== "free" && (
+            <div>
               <input
                 type="number"
                 name="price"
@@ -404,7 +291,7 @@ export default function CreateAgent() {
                 <p className="mt-1 text-sm text-red-500">{errors.price}</p>
               )}
             </div>
-          </div>
+          )}
         </div>
 
         {/* Submit Button */}

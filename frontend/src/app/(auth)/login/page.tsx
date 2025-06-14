@@ -4,6 +4,7 @@ import { useAccount, useConnect } from "wagmi";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import { Sun, Moon } from "lucide-react";
+import { env } from "@/lib/env";
 
 export default function LoginPage() {
   const { isConnected, address } = useAccount();
@@ -33,7 +34,7 @@ export default function LoginPage() {
   const createUser = useCallback(async () => {
     if (!address) return;
     try {
-      const response = await fetch("http://localhost:5001/api/user", {
+      const response = await fetch(`${env.backendUrl}/api/user`, {
         method: "POST",
         headers: {
           "content-type": "application/json",

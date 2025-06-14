@@ -19,6 +19,9 @@ export const ENV = {
   paymasterAndBundlerEndpoint:
     process.env.NEXT_PUBLIC_PAYMASTER_AND_BUNDLER_ENDPOINT,
   dotiBotAddress: process.env.NEXT_PUBLIC_DOTI_BOT_ADDRESS,
+  defaultToken: process.env.NEXT_PUBLIC_DEFAULT_TOKEN,
+  backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
+  chain: process.env.NEXT_PUBLIC_NETWORK_ID === "mainnet" ? base : baseSepolia,
 };
 
 export const envSchema = z.object({
@@ -41,7 +44,9 @@ export const envSchema = z.object({
   cdpApiKeySecret: z.string().min(1),
   openApiKey: z.string().min(1),
   paymasterAndBundlerEndpoint: z.string().min(1),
+  backendUrl: z.string().min(1),
   dotiBotAddress: z.string(),
+  defaultToken: z.string(),
   chain: z.custom<Chain>((data) => data === baseSepolia || data === base, {
     message: "baseNetwork should be either base or baseSepolia",
   }),

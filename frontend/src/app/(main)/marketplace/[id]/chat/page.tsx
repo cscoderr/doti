@@ -32,16 +32,13 @@ export default function AgentChat() {
   const startAgent = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `http://localhost:5001/api/agent/${agentId}`,
-        {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({}),
-        }
-      );
+      const response = await fetch(`${env.backendUrl}/api/agent/${agentId}`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
       if (response.ok) {
         const json = await response.json();
         console.log("Agents data is here", json);
@@ -58,15 +55,12 @@ export default function AgentChat() {
   const getAgents = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `http://localhost:5001/api/agent/${agentId}`,
-        {
-          method: "GET",
-          headers: {
-            "content-type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${env.backendUrl}/api/agent/${agentId}`, {
+        method: "GET",
+        headers: {
+          "content-type": "application/json",
+        },
+      });
       if (response.ok) {
         const json = await response.json();
         console.log("Agents data is here", json.data);

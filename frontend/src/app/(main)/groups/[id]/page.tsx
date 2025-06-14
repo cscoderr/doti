@@ -12,7 +12,6 @@ import {
   Edit2,
   Trash2,
   Copy,
-  Bot,
   Info,
   LogOut,
   AlertTriangle,
@@ -882,21 +881,21 @@ export default function Details() {
             } items-end gap-2`}
           >
             {/* Avatar */}
-            {message.sender.id !== "current-user" && (
+            {/* {message.sender.id !== "current-user" && (
               <div className="w-8 h-8 rounded-full flex items-center justify-center">
                 {message.isAgent ? (
                   <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center">
                     <Bot size={16} className="text-accent" />
                   </div>
                 ) : (
-                  <img
-                    src={message.sender.avatar}
-                    alt={message.sender.name}
-                    className="w-8 h-8 rounded-full"
-                  />
+                  <Image
+                  src={message.sender.avatar}
+                  alt={message.sender.name}
+                  className="w-8 h-8 rounded-full"
+                />
                 )}
               </div>
-            )}
+            )} */}
 
             {/* Message Content */}
             <div

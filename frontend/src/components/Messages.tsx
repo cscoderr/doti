@@ -5,13 +5,13 @@ import BlockiesIcon from "./BlockiesIcon";
 import { useXMTP } from "@/context/XmtpProvider";
 import CircularProgressBar from "./CircularProgressBar";
 import { env } from "@/lib/env";
+import ReactMarkdown from "react-markdown";
 
 export default function Messages() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isGenerating] = useState(false);
 
-  //TODO! ALL XMTP STATE STARTS HERE
   const { client } = useXMTP();
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -19,16 +19,13 @@ export default function Messages() {
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [streamActive, setStreamActive] = useState(false);
-  // Use ref to track if stream is already started to prevent infinite loops
   const streamStartedRef = useRef(false);
-  //TODO! ALL XMTP END HERE
 
   // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  //TODO! ALL XMTP CONFIG START HERE
   const initializeConversation = useCallback(async () => {
     if (!client) return;
     let conversation: Conversation | null = null;
@@ -47,37 +44,6 @@ export default function Messages() {
     }
   }, [client]);
 
-  // const fetchAgentResponse = useCallback(
-  //   async ({
-  //     userId,
-  //     message,
-  //   }: {
-  //     userId: string;
-  //     message: string;
-  //   }): Promise<string | null> => {
-  //     try {
-  //       const response = await fetch("http://localhost:5001/api/message", {
-  //         method: "POST",
-  //         headers: {
-  //           "content-type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           userId: userId,
-  //           message: String(message),
-  //         }),
-  //       });
-  //       if (response.ok) {
-  //         return response.json();
-  //       }
-  //       return null;
-  //     } catch (e) {
-  //       console.log("Unable to fetch agent response", e);
-  //       return null;
-  //     }
-  //   },
-  //   []
-  // );
-
   // Start a stream to listen for new messages
   const startMessageStream = useCallback(async () => {
     // Prevent double initialization and infinite loops
@@ -85,18 +51,15 @@ export default function Messages() {
       return;
 
     try {
-      console.log("Starting message stream for bot conversation");
       // Set flag before state to prevent race conditions
       streamStartedRef.current = true;
       setStreamActive(true);
 
       const stream = await conversation.stream();
-
       // Handle the stream with for await...of loop
       const streamMessages = async () => {
         try {
           for await (const message of stream) {
-            console.log("Received message here!!:", message);
             // Ensure we don't add undefined to the messages array
             if (message) {
               setMessages((prevMessages) => [...prevMessages, message]);
@@ -111,7 +74,6 @@ export default function Messages() {
 
       // Start listening for messages
       streamMessages();
-
       // Return a cleanup function
       return () => {
         if (stream && typeof stream.return === "function") {
@@ -126,7 +88,7 @@ export default function Messages() {
       streamStartedRef.current = false;
       return undefined;
     }
-  }, [client, conversation, streamActive]);
+  }, [client, conversation]);
 
   // Initialize conversation when client is available
   useEffect(() => {
@@ -172,7 +134,6 @@ export default function Messages() {
       setSending(false);
     }
   };
-  //TODO! ALL XMTP CONFIG END HERE
   return (
     <>
       <div
@@ -221,10 +182,7 @@ export default function Messages() {
               >
                 <div className="flex items-start justify-between gap-2">
                   <p className="whitespace-pre-wrap break-words text-sm">
-                    {String(msg.content)}
-                    {/* {message.isEdited && (
-                    <span className="text-xs opacity-60 ml-1">(edited)</span>
-                  )} */}
+                    <ReactMarkdown>{String(msg.content)}</ReactMarkdown>
                   </p>
                   {isUser && (
                     <div className="relative">
@@ -294,15 +252,15 @@ export default function Messages() {
       {/* Input container */}
       <div className="bg-background border-t border-neutral-200 dark:border-neutral-800 p-4">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-end gap-2">
+          <div className="flex items-center gap-2">
             <div className="flex-1 relative">
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !sending) {
+                  if (e.key === "Enter" && !e.shiftKey && !sending) {
+                    e.preventDefault();
                     handleSendMessage();
-                    return;
                   }
                 }}
                 placeholder="Type a message"
@@ -310,14 +268,14 @@ export default function Messages() {
                 rows={1}
                 style={{ minHeight: "44px", maxHeight: "200px" }}
               />
-              <div className="absolute right-2 bottom-2 flex items-center gap-1">
+              {/* <div className="absolute right-2 bottom-2 flex items-center gap-1">
                 <button className="p-1.5 text-textDark/60 dark:text-textLight/60 hover:text-primary transition-colors">
                   <Smile size={20} />
                 </button>
                 <button className="p-1.5 text-textDark/60 dark:text-textLight/60 hover:text-primary transition-colors">
                   <Paperclip size={20} />
                 </button>
-              </div>
+              </div> */}
             </div>
             <button
               onClick={handleSendMessage}
@@ -326,7 +284,9 @@ export default function Messages() {
               className="p-3 rounded-lg bg-primary text-textLight disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent transition-colors"
             >
               {!sending && <Send size={20} />}
-              {sending && <CircularProgressBar size={20} />}
+              {sending && (
+                <CircularProgressBar size={20} color="var(--secondary)" />
+              )}
             </button>
           </div>
         </div>

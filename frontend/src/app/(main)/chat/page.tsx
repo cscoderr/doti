@@ -133,10 +133,14 @@ const ChatHeader = () => {
         <div className="w-10 h-10 rounded-full bg-[var(--primary)] flex items-center justify-center">
           <span className="text-textLight font-bold text-lg">D</span>
         </div>
-        <div>
+        <div className="flex-1">
           <h2 className="font-semibold">DOTI Assistant</h2>
-          <p className="text-sm text-textDark/60 dark:text-textLight/60">
-            Online
+          <p className="text-sm text-textDark/100 dark:text-textLight/100 mt-1 line-clamp-2">
+            Your AI-powered web3 personal assistant that helps you stay informed
+            and interact with the crypto world using the Coinbase Developer
+            Platform. I can help you check wallet balances, provide token
+            information, share crypto news, and guide you through best practices
+            in the web3 space.
           </p>
         </div>
       </div>
