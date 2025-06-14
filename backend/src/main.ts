@@ -11,6 +11,12 @@ import {
   startMessageListener,
 } from "./xmtp-helper";
 import { DotiAgentService } from "./doti.agent";
+import { getSpenderBundlerClient } from "./smartSpender";
+import {
+  spendPermissionManagerAbi,
+  spendPermissionManagerAddress,
+} from "./abis/SpendPermissionManager";
+import { SpendPermission } from "./types/SpendPermission";
 
 let xmtpClient: Client;
 let dotiAgent: DotiAgentService;
@@ -140,6 +146,29 @@ app.get("/api/agent", async (req: Request, res: Response) => {
   }
 });
 
+app.get("/api/user-agent/:address", async (req: Request, res: Response) => {
+  try {
+    const { address } = req.params;
+    const agent = await dotiAgent.getAvailableAgents(address);
+    res.json({
+      status: true,
+      data: agent,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({
+        status: false,
+        message: error.message,
+      });
+      return;
+    }
+    res.status(500).json({
+      status: false,
+      message: "An error occurred, Try again",
+    });
+  }
+});
+
 app.post("/api/agent/:agentId", async (req: Request, res: Response) => {
   try {
     const { agentId } = req.params;
@@ -188,6 +217,60 @@ app.get("/api/agent/:agentId", async (req: Request, res: Response) => {
       });
       return;
     }
+    res.status(500).json({
+      status: false,
+      message: "An error occurred, Try again",
+    });
+  }
+});
+
+async function transactSmartWallet(
+  spendPermission: SpendPermission,
+  signature: any
+) {
+  //Math.floor(new Date(spendPermission.start).getTime() / 1000),
+  const spenderBundlerClient = await getSpenderBundlerClient();
+  const userOpHash = await spenderBundlerClient.sendUserOperation({
+    calls: [
+      {
+        abi: spendPermissionManagerAbi,
+        functionName: "approveWithSignature",
+        to: spendPermissionManagerAddress,
+        args: [spendPermission, signature],
+      },
+      {
+        abi: spendPermissionManagerAbi,
+        functionName: "spend",
+        to: spendPermissionManagerAddress,
+        args: [spendPermission, BigInt(1)], // spend 1 wei
+      },
+    ],
+  });
+
+  const userOpReceipt = await spenderBundlerClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
+
+  return {
+    success: userOpReceipt.success,
+    transactionHash: userOpReceipt.receipt.transactionHash,
+  };
+}
+
+app.post("/api/collect", async (req: Request, res: Response) => {
+  try {
+    const { spendPermission, signature } = req.body;
+
+    const { success, transactionHash } = await transactSmartWallet(
+      spendPermission,
+      signature
+    );
+    res.json({
+      status: success ? "success" : "failure",
+      transactionHash: transactionHash,
+      transactionUrl: `https://sepolia.basescan.org/tx/${transactionHash}`,
+    });
+  } catch (e) {
     res.status(500).json({
       status: false,
       message: "An error occurred, Try again",

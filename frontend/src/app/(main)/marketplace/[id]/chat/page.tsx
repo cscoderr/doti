@@ -201,8 +201,8 @@ const ChatHeader = ({ agent }: { agent: DotiAgent }) => {
         <BlockiesIcon size={10} address={`0x${agent.id}`} />
         <div>
           <h2 className="font-semibold">{agent.name}</h2>
-          <p className="text-sm text-textDark/60 dark:text-textLight/60">
-            Online
+          <p className="text-sm text-textDark/100 dark:text-textLight/100 mt-1 line-clamp-2">
+            {agent.description}
           </p>
         </div>
       </div>

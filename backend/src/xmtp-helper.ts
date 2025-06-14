@@ -127,11 +127,19 @@ export async function initializeXmtpClient() {
     dbPath: XMTP_STORAGE_DIR + `/${XMTP_ENV}-${address}`,
   });
 
-  void logAgentDetails(client);
+  await logAgentDetails(client);
 
   /* Sync the conversations from the network to update the local db */
   console.log("✓ Syncing conversations...");
   await client.conversations.sync();
+
+  const conversation = await client.conversations.newDm(client.inboxId);
+  console.log("Conversation id", conversation.id);
+  console.log("Conversation id2", client.inboxId);
+
+  await conversation.send(
+    "👋 Hi! I’m Doti, your personal AI assistant. Let’s get started!"
+  );
 
   return client;
 }

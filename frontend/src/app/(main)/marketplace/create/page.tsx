@@ -74,7 +74,7 @@ export default function CreateAgent() {
     if (!formData.prompt.trim()) {
       newErrors.prompt = "Prompt is required";
     }
-    if (Number(formData.price) <= 0) {
+    if (formData.price != "free" && Number(formData.price) <= 0) {
       newErrors.price = "Price must be greater than 0";
     }
 
@@ -116,7 +116,7 @@ export default function CreateAgent() {
         // Handle form submission
         console.log("Form submitted:", formData);
         await createAgent();
-        // router.push("/marketplace");
+        router.back();
       }
     },
     [formData, createAgent, validateForm]
