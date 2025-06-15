@@ -131,7 +131,6 @@ export async function initializeXmtpClient() {
     dbEncryptionKey,
     env: XMTP_ENV as XmtpEnv,
     dbPath: XMTP_STORAGE_DIR + `/${XMTP_ENV}-${address}`,
-    loggingLevel: LogLevel.debug,
   });
 
   await logAgentDetails(client);
