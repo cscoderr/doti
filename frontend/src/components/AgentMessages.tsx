@@ -309,9 +309,9 @@ export default function AgentMessages({ agent }: { agent: DotiAgent }) {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !sending) {
+                  if (e.key === "Enter" && !e.shiftKey && !sending) {
+                    e.preventDefault();
                     handleSendMessage();
-                    return;
                   }
                 }}
                 placeholder="Type a message"
