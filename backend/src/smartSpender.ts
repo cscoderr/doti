@@ -7,7 +7,7 @@ import {
   toCoinbaseSmartAccount,
 } from "viem/account-abstraction";
 
-export async function getSpenderBundlerClient() {
+export async function getSpenderBundlerClient(): Promise<any> {
   const client = createPublicClient({
     chain: baseSepolia,
     transport: http(),

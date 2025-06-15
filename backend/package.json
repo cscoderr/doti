@@ -11,7 +11,7 @@
     "format": "prettier -w .",
     "gen:keys": "tsx scripts/generate-keys.ts",
     "lint": "yarn eslint .",
-    "start": "tsx src/main.ts"
+    "start": "npx tsx src/main.ts"
   },
   "author": "",
   "license": "ISC",
