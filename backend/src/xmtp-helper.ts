@@ -13,6 +13,7 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import {
   Client,
+  LogLevel,
   type Conversation,
   type DecodedMessage,
   type XmtpEnv,
@@ -119,12 +120,18 @@ export async function initializeXmtpClient() {
   const identifier = await signer.getIdentifier();
   const address = identifier.identifier;
 
-  //.data/xmtp/dev-xmtp.db3
+  console.log("Creating XMTP client with:", {
+    env: XMTP_ENV,
+    address,
+    dbPath: XMTP_STORAGE_DIR + `/${XMTP_ENV}-${address}`,
+    encryptionKey: ENCRYPTION_KEY,
+  });
 
   const client = await Client.create(signer, {
     dbEncryptionKey,
     env: XMTP_ENV as XmtpEnv,
     dbPath: XMTP_STORAGE_DIR + `/${XMTP_ENV}-${address}`,
+    loggingLevel: LogLevel.debug,
   });
 
   await logAgentDetails(client);
@@ -132,14 +139,6 @@ export async function initializeXmtpClient() {
   /* Sync the conversations from the network to update the local db */
   console.log("✓ Syncing conversations...");
   await client.conversations.sync();
-
-  const conversation = await client.conversations.newDm(client.inboxId);
-  console.log("Conversation id", conversation.id);
-  console.log("Conversation id2", client.inboxId);
-
-  await conversation.send(
-    "👋 Hi! I’m Doti, your personal AI assistant. Let’s get started!"
-  );
 
   return client;
 }

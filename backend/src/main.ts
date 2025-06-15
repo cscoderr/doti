@@ -292,7 +292,7 @@ void (async () => {
       await startMessageListener(xmtpClient);
     });
   } catch (error) {
-    console.error("Failed to initialize XMTP client:", error);
+    console.error("Failed to initialize", error);
     process.exit(1);
   }
 })();
