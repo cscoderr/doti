@@ -8,6 +8,7 @@ import { DotiAgent } from "@/types";
 import CircularProgressBar from "@/components/CircularProgressBar";
 import { env } from "@/lib/env";
 import { useQuery } from "@tanstack/react-query";
+import { base } from "viem/chains";
 
 export default function MarketPlace() {
   const [searchQuery, setSearchQuery] = useState("");

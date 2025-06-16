@@ -418,8 +418,9 @@ export class DotiAgentManager {
     const agent = createReactAgent({
       llm,
       tools,
+      name: agentConfig.name,
       checkpointSaver: memoryStore[memoryKey],
-      messageModifier: customPrompt,
+      prompt: customPrompt,
     });
 
     // Save wallet data

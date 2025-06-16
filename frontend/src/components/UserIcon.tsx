@@ -14,15 +14,11 @@ const UserIcon = ({
 }) => {
   const { address } = useAccount();
 
-  const icon = useMemo(
-    () =>
-      blockies
-        .create({
-          seed: address,
-        })
-        .toDataURL(),
-    [address]
-  );
+  const icon = blockies
+    .create({
+      seed: address,
+    })
+    .toDataURL();
 
   return (
     <Image

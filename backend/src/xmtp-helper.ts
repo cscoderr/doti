@@ -187,7 +187,9 @@ export async function initializeAgent(
 
     const tools = await getLangChainTools(agentkit);
 
-    memoryStore[userId] = new MemorySaver();
+    if (!memoryStore[userId]) {
+      memoryStore[userId] = new MemorySaver();
+    }
 
     const agentConfig: AgentConfig = {
       configurable: { thread_id: userId },
@@ -197,7 +199,7 @@ export async function initializeAgent(
       llm,
       tools,
       checkpointSaver: memoryStore[userId],
-      messageModifier: dotiAgentPrompt,
+      prompt: dotiAgentPrompt,
     });
 
     agentStore[userId] = agent;

@@ -74,7 +74,7 @@ export default function CreateAgent() {
     if (!formData.prompt.trim()) {
       newErrors.prompt = "Prompt is required";
     }
-    if (formData.price != "free" && Number(formData.price) <= 0) {
+    if (formData.pricingModel !== "free" && Number(formData.price) <= 0) {
       newErrors.price = "Price must be greater than 0";
     }
 

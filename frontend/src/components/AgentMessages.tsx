@@ -228,13 +228,13 @@ export default function AgentMessages({ agent }: { agent: DotiAgent }) {
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <p className="whitespace-pre-wrap break-words text-sm">
+                  <span className="whitespace-pre-wrap break-words text-sm">
                     {/* {String(msg.content)} */}
                     <ReactMarkdown>{String(msg.content)}</ReactMarkdown>
                     {/* {message.isEdited && (
                     <span className="text-xs opacity-60 ml-1">(edited)</span>
                   )} */}
-                  </p>
+                  </span>
                   {isUser && (
                     <div className="relative">
                       {/* Message Menu */}

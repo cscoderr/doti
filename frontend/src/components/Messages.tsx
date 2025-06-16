@@ -181,9 +181,9 @@ export default function Messages() {
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <p className="whitespace-pre-wrap break-words text-sm">
+                  <span className="whitespace-pre-wrap break-words text-sm">
                     <ReactMarkdown>{String(msg.content)}</ReactMarkdown>
-                  </p>
+                  </span>
                   {isUser && (
                     <div className="relative">
                       {/* Message Menu */}
