@@ -127,6 +127,7 @@ export default function Subscribe() {
         throw new Error("Network response was not ok");
       }
       data = await response.json();
+      console.log(data);
     } catch (e) {
       console.error(e);
     }

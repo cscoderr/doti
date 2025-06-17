@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migration:run": "npx prisma migrate dev",
+    "postinstall": "npx prisma generate --no-engine",
+    "prisma:deploy": "npx prisma migrate deploy",
+    "prisma:studio": "npx prisma studio --port 5556"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.22",
@@ -50,5 +54,8 @@
     "tailwindcss": "^4",
     "tsx": "^4.19.4",
     "typescript": "^5"
+  },
+  "prisma": {
+    "schema": "src/prisma/schema.prisma"
   }
 }

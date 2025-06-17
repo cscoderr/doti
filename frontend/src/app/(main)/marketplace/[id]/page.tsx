@@ -23,7 +23,6 @@ export default function AgentDetails() {
       const response = await fetch(`${env.backendUrl}/api/agent/${agentId}`, {
         method: "GET",
       });
-      console.log(response.status);
 
       if (!response.ok) {
         throw new Error("Unable to get agent");
