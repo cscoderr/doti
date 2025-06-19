@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
 import { useAccount, useSignMessage } from "wagmi";
 import { useXMTP } from "@/context/XmtpProvider";
@@ -11,8 +11,9 @@ import { createSCWSigner } from "@/lib/xmtp-helper";
 import { Signer } from "@xmtp/browser-sdk";
 import AgentMessages from "@/components/AgentMessages";
 import { DotiAgent } from "@/types";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import BlockiesIcon from "@/components/BlockiesIcon";
+import { useSubscribe } from "@/hooks/useSubscribe";
 
 const XMTP_CONNECTION_TYPE_KEY = "xmtp:connectionType";
 const XMTP_INITIALIZING = "xmtp:initializing";
@@ -27,7 +28,32 @@ export default function AgentChat() {
   const [localInitializing, setLocalInitializing] = useState(false);
   const [agent, setAgent] = useState<DotiAgent | null>(null);
   const params = useParams();
+  const router = useRouter();
   const agentId = params.id as string;
+  const {
+    subscribe,
+    isValidSubscription,
+    isSubscriptionsPending,
+    isSubscriptionsLoading,
+  } = useSubscribe({
+    agentId: agentId,
+  });
+
+  const isSubscribed = useMemo(() => {
+    return (
+      isValidSubscription?.some(
+        (value) =>
+          value.spendPermission.spender.toLocaleLowerCase() ===
+          agent?.ownerId.toLocaleLowerCase()
+      ) || false
+    );
+  }, [agent, isValidSubscription]);
+
+  // useEffect(() => {
+  //   if (!isSubscribed) {
+  //     router.push(`/marketplace/${agentId}`);
+  //   }
+  // }, [agent, isValidSubscription]);
 
   const startAgent = useCallback(async () => {
     try {
@@ -181,7 +207,7 @@ export default function AgentChat() {
       <ChatHeader agent={agent} />
 
       {/* Messages Container */}
-      {loading && <CircularProgressBar />}
+      {(loading || !client) && <CircularProgressBar />}
 
       {/* Messages list */}
       {!loading && client && <AgentMessages agent={agent} />}

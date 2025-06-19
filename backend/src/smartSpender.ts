@@ -1,27 +1,31 @@
-import { createPublicClient, createWalletClient, Hex, http } from "viem";
-import { baseSepolia } from "viem/chains";
+import { createPublicClient, Hex, http, parseUnits } from "viem";
+import { base, baseSepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import {
   createBundlerClient,
   createPaymasterClient,
   toCoinbaseSmartAccount,
 } from "viem/account-abstraction";
+import { SpendPermissionResponse } from "./types/SpendPermission";
+import {
+  spendPermissionManagerAbi,
+  spendPermissionManagerAddress,
+} from "./abis/SpendPermissionManager";
 
 export async function getSpenderBundlerClient(): Promise<any> {
   const client = createPublicClient({
-    chain: baseSepolia,
+    chain: base,
     transport: http(),
   });
 
   const spenderAccountOwner = privateKeyToAccount(
-    process.env.WALLET_KEY! as Hex
+    `0x${process.env.WALLET_KEY!}` as Hex
   );
 
   const spenderAccount = await toCoinbaseSmartAccount({
     client,
     owners: [spenderAccountOwner],
   });
-  console.log({ spenderAccount });
   const paymasterClient = createPaymasterClient({
     transport: http(process.env.PAYMASTER_AND_BUNDLER_ENDPOINT),
   });
@@ -34,4 +38,43 @@ export async function getSpenderBundlerClient(): Promise<any> {
   });
 
   return spenderBundlerClient;
+}
+
+export async function chargeUser(
+  spendPermission: SpendPermissionResponse,
+  fees: number
+) {
+  const spenderBundlerClient = await getSpenderBundlerClient();
+  const calls = [
+    {
+      abi: spendPermissionManagerAbi,
+      functionName: "spend",
+      to: spendPermissionManagerAddress,
+      args: [
+        {
+          account: spendPermission.account as `0x${string}`,
+          spender: spendPermission.spender as `0x${string}`,
+          allowance: BigInt(spendPermission.allowance),
+          salt: BigInt(spendPermission.salt),
+          token: spendPermission.token as `0x${string}`,
+          period: spendPermission.period,
+          start: Math.floor(new Date(spendPermission.start).getTime() / 1000),
+          end: Math.floor(new Date(spendPermission.end).getTime() / 1000),
+          extraData: spendPermission.extraData as `0x${string}`,
+        },
+        parseUnits(fees.toString(), 6),
+      ],
+    },
+  ];
+
+  console.log("Calling spend with", calls[0].args);
+  console.log("Calling from smart account:", spendPermission.spender);
+
+  const userOpHash = await spenderBundlerClient.sendUserOperation({ calls });
+
+  const userOpReceipt = await spenderBundlerClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
+
+  return userOpReceipt.receipt.transactionHash;
 }

@@ -3,9 +3,20 @@ import fs from "node:fs";
 import path from "node:path";
 import { IdentifierKind, type Client, type Signer } from "@xmtp/node-sdk";
 import { fromString, toString } from "uint8arrays";
-import { createWalletClient, http, toBytes } from "viem";
+import {
+  Address,
+  createPublicClient,
+  createWalletClient,
+  http,
+  toBytes,
+} from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { sepolia } from "viem/chains";
+import { base, baseSepolia, sepolia } from "viem/chains";
+import { balanceOf } from "./abis/BalanceOf";
+import {
+  SpendPermissionResponse,
+  SubscribeResponse,
+} from "./types/SpendPermission";
 
 interface User {
   key: `0x${string}`;
@@ -157,4 +168,45 @@ export function validateEnvironment(vars: string[]): Record<string, string> {
     acc[key] = process.env[key] as string;
     return acc;
   }, {});
+}
+
+export async function getTokenBalance({
+  address,
+  tokenAddress,
+}: {
+  address: Address;
+  tokenAddress: Address;
+}) {
+  const client = createPublicClient({
+    chain: process.env.NETWORK_ID === "base-mainnet" ? base : baseSepolia,
+    transport: http(),
+  });
+  const balance = await client.readContract({
+    abi: balanceOf,
+    functionName: "balanceOf",
+    address: tokenAddress,
+    args: [address],
+  });
+  return balance as bigint;
+}
+
+export async function getSubscriptions(address: string, spender?: string) {
+  try {
+    console.log(
+      `${process.env.FRONTEND_BASE_URL}/api/subscribe?account=${address}&spender=${spender}&status=1`
+    );
+    const response = await fetch(
+      `${process.env.FRONTEND_BASE_URL}/api/subscribe?account=${address}&spender=${spender}&status=1`
+    );
+
+    if (!response.ok) {
+      throw new Error("An error occur, Try again");
+    }
+    const data = (await response.json()) as SubscribeResponse;
+
+    return data.data[0];
+  } catch (e) {
+    console.log(e);
+    throw new Error("An error occur, Try again");
+  }
 }

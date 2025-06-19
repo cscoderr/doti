@@ -127,6 +127,7 @@ exports.Prisma.SpendPermissionScalarFieldEnum = {
   token: 'token',
   allowance: 'allowance',
   period: 'period',
+  agent: 'agent',
   start: 'start',
   end: 'end',
   salt: 'salt',
@@ -142,6 +143,11 @@ exports.Prisma.SortOrder = {
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
 };
 
 

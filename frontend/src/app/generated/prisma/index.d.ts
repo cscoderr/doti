@@ -882,16 +882,12 @@ export namespace Prisma {
   }
 
   export type SpendPermissionAvgAggregateOutputType = {
-    allowance: number | null
     period: number | null
-    salt: number | null
     status: number | null
   }
 
   export type SpendPermissionSumAggregateOutputType = {
-    allowance: bigint | null
-    period: bigint | null
-    salt: bigint | null
+    period: number | null
     status: number | null
   }
 
@@ -900,11 +896,12 @@ export namespace Prisma {
     account: string | null
     spender: string | null
     token: string | null
-    allowance: bigint | null
-    period: bigint | null
+    allowance: string | null
+    period: number | null
+    agent: string | null
     start: Date | null
     end: Date | null
-    salt: bigint | null
+    salt: string | null
     extraData: string | null
     status: number | null
   }
@@ -914,11 +911,12 @@ export namespace Prisma {
     account: string | null
     spender: string | null
     token: string | null
-    allowance: bigint | null
-    period: bigint | null
+    allowance: string | null
+    period: number | null
+    agent: string | null
     start: Date | null
     end: Date | null
-    salt: bigint | null
+    salt: string | null
     extraData: string | null
     status: number | null
   }
@@ -930,6 +928,7 @@ export namespace Prisma {
     token: number
     allowance: number
     period: number
+    agent: number
     start: number
     end: number
     salt: number
@@ -940,16 +939,12 @@ export namespace Prisma {
 
 
   export type SpendPermissionAvgAggregateInputType = {
-    allowance?: true
     period?: true
-    salt?: true
     status?: true
   }
 
   export type SpendPermissionSumAggregateInputType = {
-    allowance?: true
     period?: true
-    salt?: true
     status?: true
   }
 
@@ -960,6 +955,7 @@ export namespace Prisma {
     token?: true
     allowance?: true
     period?: true
+    agent?: true
     start?: true
     end?: true
     salt?: true
@@ -974,6 +970,7 @@ export namespace Prisma {
     token?: true
     allowance?: true
     period?: true
+    agent?: true
     start?: true
     end?: true
     salt?: true
@@ -988,6 +985,7 @@ export namespace Prisma {
     token?: true
     allowance?: true
     period?: true
+    agent?: true
     start?: true
     end?: true
     salt?: true
@@ -1087,12 +1085,13 @@ export namespace Prisma {
     account: string
     spender: string
     token: string
-    allowance: bigint
-    period: bigint
+    allowance: string
+    period: number
+    agent: string
     start: Date
     end: Date
-    salt: bigint
-    extraData: string
+    salt: string
+    extraData: string | null
     status: number
     _count: SpendPermissionCountAggregateOutputType | null
     _avg: SpendPermissionAvgAggregateOutputType | null
@@ -1122,6 +1121,7 @@ export namespace Prisma {
     token?: boolean
     allowance?: boolean
     period?: boolean
+    agent?: boolean
     start?: boolean
     end?: boolean
     salt?: boolean
@@ -1136,6 +1136,7 @@ export namespace Prisma {
     token?: boolean
     allowance?: boolean
     period?: boolean
+    agent?: boolean
     start?: boolean
     end?: boolean
     salt?: boolean
@@ -1150,6 +1151,7 @@ export namespace Prisma {
     token?: boolean
     allowance?: boolean
     period?: boolean
+    agent?: boolean
     start?: boolean
     end?: boolean
     salt?: boolean
@@ -1164,6 +1166,7 @@ export namespace Prisma {
     token?: boolean
     allowance?: boolean
     period?: boolean
+    agent?: boolean
     start?: boolean
     end?: boolean
     salt?: boolean
@@ -1171,7 +1174,7 @@ export namespace Prisma {
     status?: boolean
   }
 
-  export type SpendPermissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "account" | "spender" | "token" | "allowance" | "period" | "start" | "end" | "salt" | "extraData" | "status", ExtArgs["result"]["spendPermission"]>
+  export type SpendPermissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "account" | "spender" | "token" | "allowance" | "period" | "agent" | "start" | "end" | "salt" | "extraData" | "status", ExtArgs["result"]["spendPermission"]>
 
   export type $SpendPermissionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SpendPermission"
@@ -1181,12 +1184,13 @@ export namespace Prisma {
       account: string
       spender: string
       token: string
-      allowance: bigint
-      period: bigint
+      allowance: string
+      period: number
+      agent: string
       start: Date
       end: Date
-      salt: bigint
-      extraData: string
+      salt: string
+      extraData: string | null
       status: number
     }, ExtArgs["result"]["spendPermission"]>
     composites: {}
@@ -1615,11 +1619,12 @@ export namespace Prisma {
     readonly account: FieldRef<"SpendPermission", 'String'>
     readonly spender: FieldRef<"SpendPermission", 'String'>
     readonly token: FieldRef<"SpendPermission", 'String'>
-    readonly allowance: FieldRef<"SpendPermission", 'BigInt'>
-    readonly period: FieldRef<"SpendPermission", 'BigInt'>
+    readonly allowance: FieldRef<"SpendPermission", 'String'>
+    readonly period: FieldRef<"SpendPermission", 'Int'>
+    readonly agent: FieldRef<"SpendPermission", 'String'>
     readonly start: FieldRef<"SpendPermission", 'DateTime'>
     readonly end: FieldRef<"SpendPermission", 'DateTime'>
-    readonly salt: FieldRef<"SpendPermission", 'BigInt'>
+    readonly salt: FieldRef<"SpendPermission", 'String'>
     readonly extraData: FieldRef<"SpendPermission", 'String'>
     readonly status: FieldRef<"SpendPermission", 'Int'>
   }
@@ -2009,6 +2014,7 @@ export namespace Prisma {
     token: 'token',
     allowance: 'allowance',
     period: 'period',
+    agent: 'agent',
     start: 'start',
     end: 'end',
     salt: 'salt',
@@ -2035,6 +2041,14 @@ export namespace Prisma {
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+  export const NullsOrder: {
+    first: 'first',
+    last: 'last'
+  };
+
+  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
   /**
    * Field references
    */
@@ -2055,16 +2069,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'BigInt'
+   * Reference to a field of type 'Int'
    */
-  export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
   /**
-   * Reference to a field of type 'BigInt[]'
+   * Reference to a field of type 'Int[]'
    */
-  export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -2079,20 +2093,6 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -2121,12 +2121,13 @@ export namespace Prisma {
     account?: StringFilter<"SpendPermission"> | string
     spender?: StringFilter<"SpendPermission"> | string
     token?: StringFilter<"SpendPermission"> | string
-    allowance?: BigIntFilter<"SpendPermission"> | bigint | number
-    period?: BigIntFilter<"SpendPermission"> | bigint | number
+    allowance?: StringFilter<"SpendPermission"> | string
+    period?: IntFilter<"SpendPermission"> | number
+    agent?: StringFilter<"SpendPermission"> | string
     start?: DateTimeFilter<"SpendPermission"> | Date | string
     end?: DateTimeFilter<"SpendPermission"> | Date | string
-    salt?: BigIntFilter<"SpendPermission"> | bigint | number
-    extraData?: StringFilter<"SpendPermission"> | string
+    salt?: StringFilter<"SpendPermission"> | string
+    extraData?: StringNullableFilter<"SpendPermission"> | string | null
     status?: IntFilter<"SpendPermission"> | number
   }
 
@@ -2137,10 +2138,11 @@ export namespace Prisma {
     token?: SortOrder
     allowance?: SortOrder
     period?: SortOrder
+    agent?: SortOrder
     start?: SortOrder
     end?: SortOrder
     salt?: SortOrder
-    extraData?: SortOrder
+    extraData?: SortOrderInput | SortOrder
     status?: SortOrder
   }
 
@@ -2152,12 +2154,13 @@ export namespace Prisma {
     account?: StringFilter<"SpendPermission"> | string
     spender?: StringFilter<"SpendPermission"> | string
     token?: StringFilter<"SpendPermission"> | string
-    allowance?: BigIntFilter<"SpendPermission"> | bigint | number
-    period?: BigIntFilter<"SpendPermission"> | bigint | number
+    allowance?: StringFilter<"SpendPermission"> | string
+    period?: IntFilter<"SpendPermission"> | number
+    agent?: StringFilter<"SpendPermission"> | string
     start?: DateTimeFilter<"SpendPermission"> | Date | string
     end?: DateTimeFilter<"SpendPermission"> | Date | string
-    salt?: BigIntFilter<"SpendPermission"> | bigint | number
-    extraData?: StringFilter<"SpendPermission"> | string
+    salt?: StringFilter<"SpendPermission"> | string
+    extraData?: StringNullableFilter<"SpendPermission"> | string | null
     status?: IntFilter<"SpendPermission"> | number
   }, "id">
 
@@ -2168,10 +2171,11 @@ export namespace Prisma {
     token?: SortOrder
     allowance?: SortOrder
     period?: SortOrder
+    agent?: SortOrder
     start?: SortOrder
     end?: SortOrder
     salt?: SortOrder
-    extraData?: SortOrder
+    extraData?: SortOrderInput | SortOrder
     status?: SortOrder
     _count?: SpendPermissionCountOrderByAggregateInput
     _avg?: SpendPermissionAvgOrderByAggregateInput
@@ -2188,12 +2192,13 @@ export namespace Prisma {
     account?: StringWithAggregatesFilter<"SpendPermission"> | string
     spender?: StringWithAggregatesFilter<"SpendPermission"> | string
     token?: StringWithAggregatesFilter<"SpendPermission"> | string
-    allowance?: BigIntWithAggregatesFilter<"SpendPermission"> | bigint | number
-    period?: BigIntWithAggregatesFilter<"SpendPermission"> | bigint | number
+    allowance?: StringWithAggregatesFilter<"SpendPermission"> | string
+    period?: IntWithAggregatesFilter<"SpendPermission"> | number
+    agent?: StringWithAggregatesFilter<"SpendPermission"> | string
     start?: DateTimeWithAggregatesFilter<"SpendPermission"> | Date | string
     end?: DateTimeWithAggregatesFilter<"SpendPermission"> | Date | string
-    salt?: BigIntWithAggregatesFilter<"SpendPermission"> | bigint | number
-    extraData?: StringWithAggregatesFilter<"SpendPermission"> | string
+    salt?: StringWithAggregatesFilter<"SpendPermission"> | string
+    extraData?: StringNullableWithAggregatesFilter<"SpendPermission"> | string | null
     status?: IntWithAggregatesFilter<"SpendPermission"> | number
   }
 
@@ -2202,12 +2207,13 @@ export namespace Prisma {
     account: string
     spender: string
     token: string
-    allowance: bigint | number
-    period: bigint | number
+    allowance: string
+    period: number
+    agent: string
     start: Date | string
     end: Date | string
-    salt: bigint | number
-    extraData: string
+    salt: string
+    extraData?: string | null
     status?: number
   }
 
@@ -2216,12 +2222,13 @@ export namespace Prisma {
     account: string
     spender: string
     token: string
-    allowance: bigint | number
-    period: bigint | number
+    allowance: string
+    period: number
+    agent: string
     start: Date | string
     end: Date | string
-    salt: bigint | number
-    extraData: string
+    salt: string
+    extraData?: string | null
     status?: number
   }
 
@@ -2230,12 +2237,13 @@ export namespace Prisma {
     account?: StringFieldUpdateOperationsInput | string
     spender?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
-    allowance?: BigIntFieldUpdateOperationsInput | bigint | number
-    period?: BigIntFieldUpdateOperationsInput | bigint | number
+    allowance?: StringFieldUpdateOperationsInput | string
+    period?: IntFieldUpdateOperationsInput | number
+    agent?: StringFieldUpdateOperationsInput | string
     start?: DateTimeFieldUpdateOperationsInput | Date | string
     end?: DateTimeFieldUpdateOperationsInput | Date | string
-    salt?: BigIntFieldUpdateOperationsInput | bigint | number
-    extraData?: StringFieldUpdateOperationsInput | string
+    salt?: StringFieldUpdateOperationsInput | string
+    extraData?: NullableStringFieldUpdateOperationsInput | string | null
     status?: IntFieldUpdateOperationsInput | number
   }
 
@@ -2244,12 +2252,13 @@ export namespace Prisma {
     account?: StringFieldUpdateOperationsInput | string
     spender?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
-    allowance?: BigIntFieldUpdateOperationsInput | bigint | number
-    period?: BigIntFieldUpdateOperationsInput | bigint | number
+    allowance?: StringFieldUpdateOperationsInput | string
+    period?: IntFieldUpdateOperationsInput | number
+    agent?: StringFieldUpdateOperationsInput | string
     start?: DateTimeFieldUpdateOperationsInput | Date | string
     end?: DateTimeFieldUpdateOperationsInput | Date | string
-    salt?: BigIntFieldUpdateOperationsInput | bigint | number
-    extraData?: StringFieldUpdateOperationsInput | string
+    salt?: StringFieldUpdateOperationsInput | string
+    extraData?: NullableStringFieldUpdateOperationsInput | string | null
     status?: IntFieldUpdateOperationsInput | number
   }
 
@@ -2258,12 +2267,13 @@ export namespace Prisma {
     account: string
     spender: string
     token: string
-    allowance: bigint | number
-    period: bigint | number
+    allowance: string
+    period: number
+    agent: string
     start: Date | string
     end: Date | string
-    salt: bigint | number
-    extraData: string
+    salt: string
+    extraData?: string | null
     status?: number
   }
 
@@ -2272,12 +2282,13 @@ export namespace Prisma {
     account?: StringFieldUpdateOperationsInput | string
     spender?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
-    allowance?: BigIntFieldUpdateOperationsInput | bigint | number
-    period?: BigIntFieldUpdateOperationsInput | bigint | number
+    allowance?: StringFieldUpdateOperationsInput | string
+    period?: IntFieldUpdateOperationsInput | number
+    agent?: StringFieldUpdateOperationsInput | string
     start?: DateTimeFieldUpdateOperationsInput | Date | string
     end?: DateTimeFieldUpdateOperationsInput | Date | string
-    salt?: BigIntFieldUpdateOperationsInput | bigint | number
-    extraData?: StringFieldUpdateOperationsInput | string
+    salt?: StringFieldUpdateOperationsInput | string
+    extraData?: NullableStringFieldUpdateOperationsInput | string | null
     status?: IntFieldUpdateOperationsInput | number
   }
 
@@ -2286,12 +2297,13 @@ export namespace Prisma {
     account?: StringFieldUpdateOperationsInput | string
     spender?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
-    allowance?: BigIntFieldUpdateOperationsInput | bigint | number
-    period?: BigIntFieldUpdateOperationsInput | bigint | number
+    allowance?: StringFieldUpdateOperationsInput | string
+    period?: IntFieldUpdateOperationsInput | number
+    agent?: StringFieldUpdateOperationsInput | string
     start?: DateTimeFieldUpdateOperationsInput | Date | string
     end?: DateTimeFieldUpdateOperationsInput | Date | string
-    salt?: BigIntFieldUpdateOperationsInput | bigint | number
-    extraData?: StringFieldUpdateOperationsInput | string
+    salt?: StringFieldUpdateOperationsInput | string
+    extraData?: NullableStringFieldUpdateOperationsInput | string | null
     status?: IntFieldUpdateOperationsInput | number
   }
 
@@ -2310,15 +2322,15 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type BigIntFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -2332,15 +2344,24 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
   }
 
   export type SpendPermissionCountOrderByAggregateInput = {
@@ -2350,6 +2371,7 @@ export namespace Prisma {
     token?: SortOrder
     allowance?: SortOrder
     period?: SortOrder
+    agent?: SortOrder
     start?: SortOrder
     end?: SortOrder
     salt?: SortOrder
@@ -2358,9 +2380,7 @@ export namespace Prisma {
   }
 
   export type SpendPermissionAvgOrderByAggregateInput = {
-    allowance?: SortOrder
     period?: SortOrder
-    salt?: SortOrder
     status?: SortOrder
   }
 
@@ -2371,6 +2391,7 @@ export namespace Prisma {
     token?: SortOrder
     allowance?: SortOrder
     period?: SortOrder
+    agent?: SortOrder
     start?: SortOrder
     end?: SortOrder
     salt?: SortOrder
@@ -2385,6 +2406,7 @@ export namespace Prisma {
     token?: SortOrder
     allowance?: SortOrder
     period?: SortOrder
+    agent?: SortOrder
     start?: SortOrder
     end?: SortOrder
     salt?: SortOrder
@@ -2393,9 +2415,7 @@ export namespace Prisma {
   }
 
   export type SpendPermissionSumOrderByAggregateInput = {
-    allowance?: SortOrder
     period?: SortOrder
-    salt?: SortOrder
     status?: SortOrder
   }
 
@@ -2417,36 +2437,6 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type BigIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedBigIntFilter<$PrismaModel>
-    _min?: NestedBigIntFilter<$PrismaModel>
-    _max?: NestedBigIntFilter<$PrismaModel>
-  }
-
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -2463,20 +2453,40 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
-  }
-
-  export type BigIntFieldUpdateOperationsInput = {
-    set?: bigint | number
-    increment?: bigint | number
-    decrement?: bigint | number
-    multiply?: bigint | number
-    divide?: bigint | number
-  }
-
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -2485,6 +2495,14 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -2501,15 +2519,15 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type NestedBigIntFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -2523,15 +2541,18 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
@@ -2551,20 +2572,20 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type NestedBigIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
     _count?: NestedIntFilter<$PrismaModel>
     _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedBigIntFilter<$PrismaModel>
-    _min?: NestedBigIntFilter<$PrismaModel>
-    _max?: NestedBigIntFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type NestedFloatFilter<$PrismaModel = never> = {
@@ -2592,20 +2613,32 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
 

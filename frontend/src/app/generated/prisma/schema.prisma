@@ -34,12 +34,13 @@ model SpendPermission {
   account   String
   spender   String
   token     String
-  allowance BigInt
-  period    BigInt
+  allowance String
+  period    Int
+  agent     String
   start     DateTime
   end       DateTime
-  salt      BigInt
-  extraData String
+  salt      String
+  extraData String?
   status    Int      @default(1)
 }
 

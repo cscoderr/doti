@@ -13,19 +13,25 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import {
   Client,
-  LogLevel,
   type Conversation,
   type DecodedMessage,
   type XmtpEnv,
 } from "@xmtp/node-sdk";
+import { getAddress, parseUnits } from "viem";
 import { dotiAgentPrompt } from "./prompt";
 import {
   createSigner,
   getEncryptionKeyFromHex,
+  getSubscriptions,
+  getTokenBalance,
   logAgentDetails,
   validateEnvironment,
 } from "./helper";
 import { getLangChainTools } from "@coinbase/agentkit-langchain";
+import { SpendPermission } from "./types/SpendPermission";
+import { chargeUser } from "./smartSpender";
+import { base, baseSepolia } from "viem/chains";
+import { ContentTypeTransactionReference } from "@xmtp/content-type-transaction-reference";
 
 const {
   WALLET_KEY,
@@ -316,17 +322,47 @@ export async function startMessageListener(client: Client) {
   }
 }
 
-/**
- * Main function to start the chatbot.
- */
-// async function main(): Promise<void> {
-//   console.log("Initializing Agent on XMTP...");
+export async function chargeUserAndSendMessage({
+  fees,
+  conversation,
+  message,
+  address,
+  agentId,
+}: {
+  fees: number;
+  conversation: Conversation;
+  message: unknown;
+  address: string;
+  agentId: string;
+}) {
+  const subscription = await getSubscriptions(address, agentId);
 
-//   ensureLocalStorage();
+  const balance = await getTokenBalance({
+    address: getAddress(subscription.spendPermission.account),
+    tokenAddress: getAddress(subscription.spendPermission.token),
+  });
 
-//   const xmtpClient = await initializeXmtpClient();
-//   await startMessageListener(xmtpClient);
-// }
+  if (balance < parseUnits(fees.toString(), 6)) {
+    conversation.send("Insufficient Funds. Top up your wallet and try again.");
+    return;
+  }
 
-// // Start the chatbot
-// main().catch(console.error);
+  const transactionHash = await chargeUser(subscription.spendPermission, fees);
+
+  if (!transactionHash || transactionHash === "") {
+    conversation.send("Oops! Payment didn't go through");
+    return;
+  }
+  console.log("sendinng message here", message);
+
+  conversation.send(message);
+  await conversation.send(
+    {
+      namespace: "eip155",
+      networkId:
+        process.env.NETWORK_ID === "base-mainnet" ? base.id : baseSepolia.id,
+      reference: transactionHash,
+    },
+    ContentTypeTransactionReference
+  );
+}

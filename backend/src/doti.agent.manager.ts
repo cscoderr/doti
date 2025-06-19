@@ -11,6 +11,7 @@ import { HumanMessage } from "@langchain/core/messages";
 import { MemorySaver } from "@langchain/langgraph";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
+import { getAddress } from "viem";
 import {
   Client,
   type Conversation,
@@ -25,6 +26,11 @@ import {
 } from "./helper";
 import { randomBytes } from "crypto";
 import { getLangChainTools } from "@coinbase/agentkit-langchain";
+import {
+  TransactionReference,
+  TransactionReferenceCodec,
+} from "@xmtp/content-type-transaction-reference";
+import { chargeUserAndSendMessage } from "./xmtp-helper";
 
 const {
   WALLET_KEY,
@@ -350,6 +356,7 @@ export class DotiAgentManager {
       dbEncryptionKey,
       env: XMTP_ENV as XmtpEnv,
       dbPath: `${XMTP_STORAGE_DIR}/${XMTP_ENV}-${agentConfig.id}-${address}`,
+      codecs: [new TransactionReferenceCodec()],
     });
 
     // Store the XMTP address for the agent
@@ -361,6 +368,7 @@ export class DotiAgentManager {
     );
     await client.conversations.sync();
 
+    //@ts-ignore
     return client;
   }
 
@@ -498,7 +506,23 @@ export class DotiAgentManager {
         );
       }
 
-      await conversation.send(response);
+      const address = getAddress(client.accountIdentifier!.identifier);
+      console.log("Client identifier", address);
+
+      const inboxState = await client.preferences.inboxStateFromInboxIds([
+        senderAddress,
+      ]);
+      const senderWalletAddress = inboxState[0].identifiers[0].identifier;
+      console.log("Main Client identifier", senderWalletAddress);
+
+      await chargeUserAndSendMessage({
+        fees: 1,
+        conversation,
+        message: response,
+        address: senderWalletAddress,
+        agentId: agentConfig.ownerId,
+      });
+      // await conversation.send(response);
       console.log(
         `Agent ${agentConfig.name} sent response to ${senderAddress}`
       );

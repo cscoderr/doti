@@ -6,13 +6,13 @@ import { useXMTP } from "@/context/XmtpProvider";
 import CircularProgressBar from "./CircularProgressBar";
 import { DotiAgent } from "@/types";
 import ReactMarkdown from "react-markdown";
+import { useAccount } from "wagmi";
 
 export default function AgentMessages({ agent }: { agent: DotiAgent }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isGenerating] = useState(false);
 
-  //TODO! ALL XMTP STATE STARTS HERE
   const { client } = useXMTP();
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -20,16 +20,15 @@ export default function AgentMessages({ agent }: { agent: DotiAgent }) {
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [streamActive, setStreamActive] = useState(false);
+  const account = useAccount();
   // Use ref to track if stream is already started to prevent infinite loops
   const streamStartedRef = useRef(false);
-  //TODO! ALL XMTP END HERE
 
   // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  //TODO! ALL XMTP CONFIG START HERE
   const initializeConversation = useCallback(async () => {
     if (!client || !agent.xmtpAddress) return;
     let conversation: Conversation | null = null;
@@ -173,7 +172,6 @@ export default function AgentMessages({ agent }: { agent: DotiAgent }) {
       setSending(false);
     }
   };
-  //TODO! ALL XMTP CONFIG END HERE
   return (
     <>
       <div
@@ -188,6 +186,10 @@ export default function AgentMessages({ agent }: { agent: DotiAgent }) {
           const clientAddress = client?.inboxId;
 
           const isUser = senderAddress === clientAddress;
+
+          const senderWalletAddress = account?.address
+            ? account.address
+            : senderAddress;
 
           // Get message sent time safely
           const sentTime = msg.sentAtNs
@@ -215,7 +217,7 @@ export default function AgentMessages({ agent }: { agent: DotiAgent }) {
                 address={
                   !isUser
                     ? `0x${agent.id}`
-                    : (msg.senderInboxId as `0x${string}`)
+                    : (senderWalletAddress as `0x${string}`)
                 }
               />
 
