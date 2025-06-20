@@ -16,6 +16,13 @@ import { OnchainKitProvider } from "@coinbase/onchainkit";
 import { XMTPProvider } from "@/context/XmtpProvider";
 import { env } from "@/lib/env";
 
+export const cbWalletConnector = coinbaseWallet({
+  appName: "Doti",
+  preference: {
+    options: "smartWalletOnly",
+  },
+});
+
 export const wagmiConfig = createConfig({
   chains: [mainnet, base, baseSepolia],
   transports: {
@@ -23,14 +30,7 @@ export const wagmiConfig = createConfig({
     [baseSepolia.id]: http(),
     [mainnet.id]: http(),
   },
-  connectors: [
-    coinbaseWallet({
-      appName: "Doti",
-      preference: {
-        options: "smartWalletOnly",
-      },
-    }),
-  ],
+  connectors: [cbWalletConnector],
   storage: createStorage({
     storage: cookieStorage,
   }),

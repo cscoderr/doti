@@ -6,6 +6,8 @@ export interface DotiAgent {
   description: string;
   prompt: string;
   ownerId: string;
+  pricingModel: string;
+  price: number;
   isPublic: boolean;
   createdAt: string;
   xmtpAddress?: string;
@@ -40,7 +42,7 @@ export type SpendPermissionResponse = {
 
 export type SubscribeResponse = {
   data: {
-    spendPermission: SpendPermissionResponse;
+    spendPermission: SpendPermissionResponse & { agent: string };
     status: number;
     error: Error | null;
   }[];

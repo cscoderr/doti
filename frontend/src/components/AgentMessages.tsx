@@ -1,12 +1,21 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Loader2, Paperclip, Send, Smile } from "lucide-react";
 import { Conversation, DecodedMessage } from "@xmtp/browser-sdk";
 import BlockiesIcon from "./BlockiesIcon";
 import { useXMTP } from "@/context/XmtpProvider";
+import {
+  ContentTypeTransactionReference,
+  TransactionReferenceCodec,
+} from "@xmtp/content-type-transaction-reference";
 import CircularProgressBar from "./CircularProgressBar";
 import { DotiAgent } from "@/types";
 import ReactMarkdown from "react-markdown";
 import { useAccount } from "wagmi";
+import { useSubscribe } from "@/hooks/useSubscribe";
+import { useRouter } from "next/navigation";
+import { EncodedContent } from "@xmtp/content-type-primitives";
+import Link from "next/link";
+import { env } from "@/lib/env";
 
 export default function AgentMessages({ agent }: { agent: DotiAgent }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -20,9 +29,30 @@ export default function AgentMessages({ agent }: { agent: DotiAgent }) {
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [streamActive, setStreamActive] = useState(false);
+  const router = useRouter();
+  const { isValidSubscription } = useSubscribe({
+    agentId: agent.id,
+  });
   const account = useAccount();
   // Use ref to track if stream is already started to prevent infinite loops
   const streamStartedRef = useRef(false);
+  const isSubscribed = useMemo(() => {
+    return (
+      isValidSubscription?.some(
+        (value) =>
+          value.spendPermission.account.toLocaleLowerCase() ===
+            account.address?.toLocaleLowerCase() &&
+          value.spendPermission.agent === agent.id
+      ) || false
+    );
+  }, [agent, isValidSubscription]);
+
+  useEffect(() => {
+    if (agent.pricingModel === "free") return;
+    if (!isSubscribed) {
+      router.push(`/marketplace/${agent.id}`);
+    }
+  }, [agent, isValidSubscription]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -229,47 +259,7 @@ export default function AgentMessages({ agent }: { agent: DotiAgent }) {
                     : "bg-background border border-neutral-200 dark:border-neutral-800 text-textDark dark:text-textLight"
                 }`}
               >
-                <div className="flex items-start justify-between gap-2">
-                  <span className="whitespace-pre-wrap break-words text-sm">
-                    {/* {String(msg.content)} */}
-                    <ReactMarkdown>{String(msg.content)}</ReactMarkdown>
-                    {/* {message.isEdited && (
-                    <span className="text-xs opacity-60 ml-1">(edited)</span>
-                  )} */}
-                  </span>
-                  {isUser && (
-                    <div className="relative">
-                      {/* Message Menu */}
-                      {/* {activeMenu === message.id && (
-                      <div className="absolute right-0 top-full mt-1 bg-background border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-lg z-10 message-menu">
-                        <div className="py-1">
-                          <button
-                            onClick={() => handleCopyMessage(message.content)}
-                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-primary/10 w-full text-left"
-                          >
-                            <Copy size={16} />
-                            Copy
-                          </button>
-                          <button
-                            onClick={() => handleEditMessage()}
-                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-primary/10 w-full text-left"
-                          >
-                            <Edit2 size={16} />
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteMessage(message.id)}
-                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-error/10 text-error w-full text-left"
-                          >
-                            <Trash2 size={16} />
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    )} */}
-                    </div>
-                  )}
-                </div>
+                <MessageTile message={msg} isUser={isUser} />
                 <div className="flex items-center gap-1 mt-1">
                   <span className="text-xs opacity-60">
                     {sentTime.toLocaleTimeString([], {
@@ -345,3 +335,50 @@ export default function AgentMessages({ agent }: { agent: DotiAgent }) {
     </>
   );
 }
+
+const MessageTile = ({
+  message,
+  isUser,
+}: {
+  message: DecodedMessage;
+  isUser: boolean;
+}) => {
+  if (message.contentType.sameAs(ContentTypeTransactionReference)) {
+    const transactionReference = new TransactionReferenceCodec();
+    const transaction = transactionReference.decode(
+      message.encodedContent as EncodedContent
+    );
+    return (
+      <div className="flex items-start justify-between gap-2">
+        <span className=" whitespace-pre-wrap break-words opacity-60 text-sm">
+          <Link
+            target={"_blank"}
+            href={`${env.chain.blockExplorers?.default.url}/tx/${transaction.reference}`}
+          >
+            {transaction.reference.substring(0, 10) +
+              "...." +
+              transaction.reference.substring(
+                transaction.reference.length - 10
+              )}
+            <span className="underline text-xs text-white ml-1">
+              (Click to view your tx)
+            </span>
+          </Link>
+        </span>
+        {isUser && <div className="relative"></div>}
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-start justify-between gap-2">
+      <span className="whitespace-pre-wrap break-words text-sm">
+        {/* {String(msg.content)} */}
+        <ReactMarkdown>{String(message.content)}</ReactMarkdown>
+        {/* {message.isEdited && (
+    <span className="text-xs opacity-60 ml-1">(edited)</span>
+  )} */}
+      </span>
+      {isUser && <div className="relative"></div>}
+    </div>
+  );
+};

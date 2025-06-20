@@ -12,6 +12,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { base } from "wagmi/chains";
 import { spendPermissionManagerAddress } from "@/lib/abis/SpendPermissionManager";
 import { SubscribeResponse } from "@/types";
+import { env } from "@/lib/env";
 
 export const useSubscribe = ({ agentId }: { agentId: string }) => {
   const [loading, setLoading] = useState(false);
@@ -49,9 +50,11 @@ export const useSubscribe = ({ agentId }: { agentId: string }) => {
 
   async function handleSubmit({
     allowance,
+    pricingModel,
     spenderAddress,
   }: {
     allowance: string;
+    pricingModel: string;
     spenderAddress: Address;
   }) {
     setLoading(true);
@@ -67,14 +70,24 @@ export const useSubscribe = ({ agentId }: { agentId: string }) => {
       }
     }
     await switchChainAsync({ chainId: base.id as 1 | 8453 | 84532 });
+    let duration;
+    if (pricingModel === "weekly") {
+      duration = 7;
+    } else if (pricingModel === "monthly") {
+      duration = 30;
+    } else if (pricingModel === "yearly") {
+      duration = 30 * 12;
+    } else {
+      duration = 1;
+    }
     const spendPermission = {
       account: accountAddress, // User wallet address
-      spender: "0x5Dba4C1Db55c64bBB0260B9F48fE7009A07AaD71" as `0x${string}`, // Spender smart contract wallet address
+      spender: env.spenderAddress as `0x${string}`, // Spender smart contract wallet address
       //   token: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address, // ETH (https://eips.ethereum.org/EIPS/eip-7528)
       token: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as Address,
       allowance: parseUnits(allowance, 6),
       //   parseUnits("1", 18),
-      period: 86400 * 15, // seconds in a day
+      period: 86400 * duration, // seconds in a day
       start: Math.ceil(Date.now() / 1000), // unix timestamp
       end: Math.ceil(Date.now() / 1000) + 7 * 68400, // 281474976710655, // max uint48
       salt: BigInt(0),

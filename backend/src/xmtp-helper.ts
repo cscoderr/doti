@@ -333,9 +333,12 @@ export async function chargeUserAndSendMessage({
   conversation: Conversation;
   message: unknown;
   address: string;
-  agentId: string;
+  agentId?: string;
 }) {
-  const subscription = await getSubscriptions(address, agentId);
+  const spenderAddress = agentId ?? process.env.SPENDER_ADDRESS;
+  const subscription = await getSubscriptions(address, spenderAddress);
+
+  if (!subscription) throw new Error("Unable to charge user");
 
   const balance = await getTokenBalance({
     address: getAddress(subscription.spendPermission.account),
@@ -347,15 +350,19 @@ export async function chargeUserAndSendMessage({
     return;
   }
 
+  if (subscription.status === 0) {
+    await conversation.send(message);
+    return;
+  }
   const transactionHash = await chargeUser(subscription.spendPermission, fees);
 
   if (!transactionHash || transactionHash === "") {
     conversation.send("Oops! Payment didn't go through");
     return;
   }
-  console.log("sendinng message here", message);
+  console.log("sending message here", message);
 
-  conversation.send(message);
+  await conversation.send(message);
   await conversation.send(
     {
       namespace: "eip155",

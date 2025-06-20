@@ -52,15 +52,17 @@ const AgentCard = ({ agent, onClick }: AgentCardProps) => {
           <span className="text-accent">★</span>
           <span className="font-medium text-sm md:text-base">{rating}</span>
         </div> */}
-        <div className="flex items-center gap-2">
-          <div className="text-primary font-medium flex items-center gap-1">
-            <Image src="/eth.svg" width={16} height={16} alt="USDC logo" />
-            {Number(Math.random() * 1).toFixed(2)} ETH
-            <span className="text-textDark/60 dark:text-textLight/60">
-              / {Math.ceil(Math.random() * 100) % 2 == 0 ? "MSG" : "Weekly"}
-            </span>
+        {agent.pricingModel !== "free" && (
+          <div className="flex items-center gap-2">
+            <div className="text-primary font-medium flex items-center gap-1">
+              <Image src="/usdc.svg" width={16} height={16} alt="USDC logo" />
+              {agent.price} USDC
+              <span className="text-textDark/60 dark:text-textLight/60">
+                / {agent.pricingModel}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

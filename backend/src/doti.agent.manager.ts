@@ -69,6 +69,8 @@ export interface UserAgent {
   description: string;
   prompt: string;
   ownerId: string;
+  pricingModel: string;
+  price: number;
   isPublic: boolean;
   createdAt: string;
   xmtpAddress?: string;
@@ -174,6 +176,8 @@ export class DotiAgentManager {
     name: string,
     description: string,
     prompt: string,
+    pricingModel: string,
+    price: number,
     isPublic: boolean = false
   ): Promise<UserAgent> {
     const agentId = this.generateAgentId();
@@ -185,6 +189,8 @@ export class DotiAgentManager {
       description,
       prompt,
       ownerId,
+      pricingModel,
+      price,
       isPublic,
       createdAt: new Date().toISOString(),
       walletKey,
@@ -516,11 +522,11 @@ export class DotiAgentManager {
       console.log("Main Client identifier", senderWalletAddress);
 
       await chargeUserAndSendMessage({
-        fees: 1,
+        fees: 0.0001,
         conversation,
         message: response,
         address: senderWalletAddress,
-        agentId: agentConfig.ownerId,
+        // agentId: agentConfig.ownerId,
       });
       // await conversation.send(response);
       console.log(
@@ -629,6 +635,8 @@ export class DotiAPI {
     name: string,
     description: string,
     prompt: string,
+    pricingModel: string,
+    price: number,
     isPublic: boolean = false
   ): Promise<UserAgent> {
     const ownerId = ownerAddress.toLowerCase();
@@ -643,6 +651,8 @@ export class DotiAPI {
       name,
       description,
       prompt,
+      pricingModel,
+      price,
       isPublic
     );
   }

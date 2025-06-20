@@ -13,6 +13,35 @@ import {
 } from "@/lib/abis/SpendPermissionManager";
 import { env } from "@/lib/env";
 
+// export async function getSpenderBundlerClient(): Promise<BundlerClient> {
+//   const client = createPublicClient({
+//     chain: env.chain,
+//     transport: http(),
+//   });
+
+//   const spenderAccountOwner = privateKeyToAccount(`0x${env.privateKey}` as Hex);
+
+//   const spenderAccount = await toCoinbaseSmartAccount({
+//     client,
+//     owners: [spenderAccountOwner],
+//   });
+
+//   const paymasterClient = createPaymasterClient({
+//     transport: http(env.paymasterAndBundlerEndpoint),
+//   });
+//   console.log("Create paymaster client", paymasterClient);
+
+//   const spenderBundlerClient = createBundlerClient({
+//     account: spenderAccount,
+//     client,
+//     paymaster: paymasterClient,
+//     transport: http(env.paymasterAndBundlerEndpoint),
+//   });
+//   console.log("Create spender bundler client", spenderBundlerClient);
+
+//   return spenderBundlerClient;
+// }
+
 export async function getSpenderBundlerClient(): Promise<BundlerClient> {
   const client = createPublicClient({
     chain: env.chain,

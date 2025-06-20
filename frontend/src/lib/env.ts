@@ -21,6 +21,7 @@ export const ENV = {
   dotiBotAddress: process.env.NEXT_PUBLIC_DOTI_BOT_ADDRESS,
   defaultToken: process.env.NEXT_PUBLIC_DEFAULT_TOKEN,
   backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
+  spenderAddress: process.env.NEXT_PUBLIC_SPENDER_ADDRESS,
   chain: process.env.NEXT_PUBLIC_NETWORK_ID === "mainnet" ? base : baseSepolia,
 };
 
@@ -47,6 +48,7 @@ export const envSchema = z.object({
   backendUrl: z.string().min(1),
   dotiBotAddress: z.string(),
   defaultToken: z.string(),
+  spenderAddress: z.string(),
   chain: z.custom<Chain>((data) => data === baseSepolia || data === base, {
     message: "baseNetwork should be either base or baseSepolia",
   }),

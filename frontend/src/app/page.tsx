@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Users, MessageSquare, TrendingUp } from "lucide-react";
 import AgentCard from "@/components/AgentCard";
 import { useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { DotiAgent } from "@/types";
 import { env } from "@/lib/env";
 
@@ -15,6 +15,7 @@ export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { isDisconnected, address } = useAccount();
+  const walletClient = useWalletClient();
 
   const handleClaimBasename = useCallback(async () => {
     setHasClaimedBasename(false);
@@ -61,6 +62,7 @@ export default function Home() {
   }, []);
   useEffect(() => {
     getAgents();
+    console.log("walletClient", walletClient);
   }, []);
 
   const stats = [

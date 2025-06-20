@@ -37,6 +37,9 @@ export async function getSpenderBundlerClient(): Promise<any> {
     transport: http(process.env.PAYMASTER_AND_BUNDLER_ENDPOINT),
   });
 
+  console.log("EOA address:", spenderAccountOwner.address);
+  console.log("SCW address:", spenderAccount.address);
+
   return spenderBundlerClient;
 }
 
@@ -67,14 +70,13 @@ export async function chargeUser(
     },
   ];
 
-  console.log("Calling spend with", calls[0].args);
-  console.log("Calling from smart account:", spendPermission.spender);
-
   const userOpHash = await spenderBundlerClient.sendUserOperation({ calls });
 
   const userOpReceipt = await spenderBundlerClient.waitForUserOperationReceipt({
     hash: userOpHash,
   });
+
+  console.log("Transaction Hash", userOpReceipt.receipt.transactionHash);
 
   return userOpReceipt.receipt.transactionHash;
 }

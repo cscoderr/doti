@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { env } from "@/lib/env";
+import CircularProgressBar from "@/components/CircularProgressBar";
 
 interface FormData {
   name: string;
@@ -24,6 +25,7 @@ export default function CreateAgent() {
     price: 0,
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -84,6 +86,7 @@ export default function CreateAgent() {
 
   const createAgent = useCallback(async () => {
     try {
+      setLoading(true);
       if (!address) return;
       const response = await fetch(`${env.backendUrl}/api/agent`, {
         method: "POST",
@@ -95,6 +98,8 @@ export default function CreateAgent() {
           name: formData.name,
           description: formData.description,
           prompt: formData.prompt,
+          pricingModel: formData.pricingModel,
+          price: formData.price,
           isPublic: true,
         }),
       });
@@ -106,6 +111,8 @@ export default function CreateAgent() {
       console.log("Unable to create agent");
     } catch (e) {
       console.log(e);
+    } finally {
+      setLoading(false);
     }
   }, [formData, address]);
 
@@ -278,8 +285,8 @@ export default function CreateAgent() {
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                min="0"
-                step="0.01"
+                min="0.00001"
+                step="0.00001"
                 className={`w-full px-4 py-2 rounded-lg border ${
                   errors.price
                     ? "border-red-500"
@@ -296,12 +303,15 @@ export default function CreateAgent() {
 
         {/* Submit Button */}
         <div className="flex justify-end">
-          <button
-            type="submit"
-            className="px-6 py-2 bg-primary text-textLight rounded-lg hover:bg-accent transition-colors"
-          >
-            Create Agent
-          </button>
+          {loading && <CircularProgressBar />}
+          {!loading && (
+            <button
+              type="submit"
+              className="px-6 py-2 bg-primary text-textLight rounded-lg hover:bg-accent transition-colors"
+            >
+              Create Agent
+            </button>
+          )}
         </div>
       </form>
     </div>

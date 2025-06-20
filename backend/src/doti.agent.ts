@@ -96,13 +96,23 @@ export class DotiAgentService {
   /**
    * Create and start an agent
    */
-  async createAndStartAgent(
-    ownerAddress: string,
-    name: string,
-    description: string,
-    prompt: string,
-    isPublic: boolean = false
-  ): Promise<UserAgent> {
+  async createAndStartAgent({
+    ownerAddress,
+    name,
+    description,
+    prompt,
+    pricingModel,
+    price,
+    isPublic = false,
+  }: {
+    ownerAddress: string;
+    name: string;
+    description: string;
+    prompt: string;
+    pricingModel: string;
+    price: number;
+    isPublic: boolean;
+  }): Promise<UserAgent> {
     console.log("Creating agent");
 
     const agent = await this.api.createAgent(
@@ -110,6 +120,8 @@ export class DotiAgentService {
       name,
       description,
       prompt,
+      pricingModel,
+      price,
       isPublic
     );
 

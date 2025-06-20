@@ -74,19 +74,23 @@ const agentSchema = z.object({
   name: z.string(),
   description: z.string(),
   prompt: z.string(),
+  pricingModel: z.string(),
+  price: z.number(),
   isPublic: z.boolean().optional(),
 });
 app.post("/api/agent", async (req: Request, res: Response) => {
   try {
     const body = req.body;
     const parsed = agentSchema.parse(body);
-    const agent = await dotiAgent.createAndStartAgent(
-      parsed.ownerAddress,
-      parsed.name,
-      parsed.description,
-      parsed.prompt,
-      parsed.isPublic || false
-    );
+    const agent = await dotiAgent.createAndStartAgent({
+      ownerAddress: parsed.ownerAddress,
+      name: parsed.name,
+      description: parsed.description,
+      prompt: parsed.prompt,
+      pricingModel: parsed.pricingModel,
+      price: parsed.price,
+      isPublic: parsed.isPublic || false,
+    });
     res.json({
       status: true,
       data: {

@@ -145,19 +145,34 @@ export async function GET(req: NextRequest) {
       contracts: contracts,
     });
 
-    let validations = data.map((value, index) => ({
-      spendPermission: spendPermissions[index],
-      status: value.status === "success" ? (Boolean(value.result) ? 1 : 0) : 0,
-      error: value.status === "failure" ? value.error : null,
-    }));
+    const validations = await Promise.all(
+      data.map(async (value, index) => {
+        const permission = spendPermissions[index];
+        await prisma.spendPermission.update({
+          where: {
+            id: permission.id,
+          },
+          data: {
+            status:
+              value.status === "success" ? (Boolean(value.result) ? 1 : 0) : 0,
+          },
+        });
+        return {
+          spendPermission: permission,
+          status:
+            value.status === "success" ? (Boolean(value.result) ? 1 : 0) : 0,
+          error: value.status === "failure" ? value.error : null,
+        };
+      })
+    );
 
-    if (status === "1") {
-      validations = validations.filter(({ status }) => status == 1);
-    }
+    // if (status === "1") {
+    //   validations = validations.filter(({ status }) => status == 1);
+    // }
 
-    if (status === "0") {
-      validations = validations.filter(({ status }) => status == 0);
-    }
+    // if (status === "0") {
+    //   validations = validations.filter(({ status }) => status == 0);
+    // }
 
     const response: SubscribeResponse = {
       status: true,

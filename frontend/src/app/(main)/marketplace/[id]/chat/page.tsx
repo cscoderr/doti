@@ -28,32 +28,7 @@ export default function AgentChat() {
   const [localInitializing, setLocalInitializing] = useState(false);
   const [agent, setAgent] = useState<DotiAgent | null>(null);
   const params = useParams();
-  const router = useRouter();
   const agentId = params.id as string;
-  const {
-    subscribe,
-    isValidSubscription,
-    isSubscriptionsPending,
-    isSubscriptionsLoading,
-  } = useSubscribe({
-    agentId: agentId,
-  });
-
-  const isSubscribed = useMemo(() => {
-    return (
-      isValidSubscription?.some(
-        (value) =>
-          value.spendPermission.spender.toLocaleLowerCase() ===
-          agent?.ownerId.toLocaleLowerCase()
-      ) || false
-    );
-  }, [agent, isValidSubscription]);
-
-  // useEffect(() => {
-  //   if (!isSubscribed) {
-  //     router.push(`/marketplace/${agentId}`);
-  //   }
-  // }, [agent, isValidSubscription]);
 
   const startAgent = useCallback(async () => {
     try {

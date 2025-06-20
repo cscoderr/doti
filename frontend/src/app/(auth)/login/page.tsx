@@ -1,14 +1,15 @@
 "use client";
 
-import { useAccount, useConnect } from "wagmi";
+import { useAccount } from "wagmi";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import { Sun, Moon } from "lucide-react";
 import { env } from "@/lib/env";
+import { ConnectAndSIWE } from "@/components/ConnectAndSIWE";
+import { ConnectWallet } from "@/components/ConnectWallet";
 
 export default function LoginPage() {
   const { isConnected, address } = useAccount();
-  const { connectors, connect } = useConnect();
   const router = useRouter();
   const [darkMode, setDarkMode] = useState(false);
 
@@ -218,14 +219,8 @@ export default function LoginPage() {
 
           <div className="space-y-4">
             <div className="flex flex-col space-y-3">
-              <div>
-                <button
-                  onClick={() => connect({ connector: connectors[0] })}
-                  className="w-full bg-primary text-white py-3 px-6 rounded-xl font-semibold hover:bg-opacity-90 transition-colors duration-200 flex items-center justify-center space-x-2"
-                >
-                  <span>Connect Coinbase Smart Wallet</span>
-                </button>
-              </div>
+              {/* <ConnectAndSIWE /> */}
+              <ConnectWallet />
             </div>
 
             <div className="mt-6 text-center text-sm text-secondary">

@@ -8,9 +8,11 @@ import BlockiesIcon from "@/components/BlockiesIcon";
 import { Address } from "viem";
 import { useSubscribe } from "@/hooks/useSubscribe";
 import { useMemo } from "react";
+import { useAccount } from "wagmi";
 
 function AgentDetails({ agent }: { agent: DotiAgent }) {
   const router = useRouter();
+  const account = useAccount();
 
   const {
     subscribe,
@@ -25,20 +27,22 @@ function AgentDetails({ agent }: { agent: DotiAgent }) {
     return (
       isValidSubscription?.some(
         (value) =>
-          value.spendPermission.spender.toLocaleLowerCase() ===
-          agent?.ownerId.toLocaleLowerCase()
+          value.spendPermission.account.toLocaleLowerCase() ===
+            account.address?.toLocaleLowerCase() &&
+          value.spendPermission.agent === agent.id
       ) || false
     );
   }, [agent, isValidSubscription]);
 
   const handleChat = () => {
-    if (isSubscribed) {
+    if (isSubscribed || agent.pricingModel === "free") {
       router.push(`${agent.id}/chat`);
     } else {
       if (!agent) return;
       subscribe({
-        allowance: "0.0001",
-        spenderAddress: agent!.ownerId as Address,
+        allowance: String(agent.price),
+        spenderAddress: agent.ownerId as Address,
+        pricingModel: agent.pricingModel,
       });
     }
   };
@@ -74,7 +78,10 @@ function AgentDetails({ agent }: { agent: DotiAgent }) {
                       </h1>
                       <div className="flex items-center gap-2 text-textDark/60 dark:text-textLight/60">
                         <span className="px-3 py-1 bg-primary/10 rounded-full text-sm">
-                          Agent ID: {agent.id}
+                          {agent.pricingModel === "free" &&
+                            `Agent ID: ${agent.id}`}
+                          {agent.pricingModel !== "free" &&
+                            `${agent.price} USDC / ${agent.pricingModel}`}
                         </span>
                       </div>
                     </div>
@@ -114,12 +121,12 @@ function AgentDetails({ agent }: { agent: DotiAgent }) {
                       onClick={handleChat}
                       disabled={loading}
                       className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl transition-all transform hover:scale-[1.02] ${
-                        isSubscribed
+                        isSubscribed || agent.pricingModel === "free"
                           ? "bg-accent/10 text-accent hover:bg-accent/20"
                           : "bg-primary text-textLight hover:bg-accent"
                       }`}
                     >
-                      {isSubscribed ? (
+                      {isSubscribed || agent.pricingModel === "free" ? (
                         <>
                           <MessageCircle size={24} />
                           <span className="font-medium">Chat with Agent</span>
