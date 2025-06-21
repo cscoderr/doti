@@ -521,6 +521,10 @@ export class DotiAgentManager {
       const senderWalletAddress = inboxState[0].identifiers[0].identifier;
       console.log("Main Client identifier", senderWalletAddress);
 
+      if (agentConfig.pricingModel === "free") {
+        await conversation.send(response);
+        return;
+      }
       await chargeUserAndSendMessage({
         fees: 0.0001,
         conversation,
