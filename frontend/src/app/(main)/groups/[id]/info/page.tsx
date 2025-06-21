@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import blockies from "blockies-ts";
+import Image from "next/image";
 
 interface GroupMember {
   id: string;
@@ -154,8 +155,10 @@ export default function GroupInfo() {
             {group.icon ? (
               <span className="text-4xl">{group.icon}</span>
             ) : (
-              <img
-                src={groupIcon}
+              <Image
+                width={20}
+                height={20}
+                src={groupIcon!}
                 alt={group.title}
                 className="w-20 h-20 rounded-lg"
               />
@@ -217,8 +220,10 @@ export default function GroupInfo() {
               >
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <img
-                      src={member.avatar}
+                    <Image
+                      width={10}
+                      height={10}
+                      src={member.avatar!}
                       alt={member.name}
                       className="w-10 h-10 rounded-full"
                     />
